@@ -739,8 +739,8 @@ int main (void) {
 			nachtmodus = 0; // zurück zu normalem Betrieb
 		}
 		
-		//Bedinung zum Testen der Nachabschaltung
-		//Bedingt die 500 Sekündige Aktualisierung der angezeigten Uhrzeit
+		// Bedinung zum Testen der Nachabschaltung
+		// Bedingt die 500 Sekündige Aktualisierung der angezeigten Uhrzeit
 		if ((nachtmodus == 1) && (fixed == RTC_OFF_PRESYNC)) {
 			if (DisplayOffTimer <= 180)	{
 				DisplayOffTimer++;

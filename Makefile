@@ -48,7 +48,7 @@ F_CPU = 10000000
 FORMAT = ihex
 
 # Target file name (without extension).
-TARGET = uhr_old
+TARGET = uhr
 
 
 # List C source files here. (C dependencies are automatically generated.)
