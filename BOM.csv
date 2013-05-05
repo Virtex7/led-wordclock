@@ -1,0 +1,71 @@
+BOM für den Bau einer!! Wordclock
+Bitte weitere Händler oder Artikelnummern eintragen!
+
+keine Garantie für richtigkeit (außer bei ICs und Widerständen), die Tantals
+stammen bei mir alle aus der Grabbelkiste und sind nach Augenmaß eingetragen.
+				
+Bezeichner	Wert			Package				Händler		Artikelnummer
+BT1		CR2032			Draht mit Batteriesockel	Reichelt	
+C1		1u			0805				Reichelt	
+C2		22p			0805				Reichelt	
+C3		22p			0805				Reichelt	
+C4		1u			0805				Reichelt	
+C5		10u Tantal		1206		
+C6		16u Tantal		1210		
+C7		1u			0805				Reichelt	
+C8		16u Tantal		1210		
+C9		1u			0805				Reichelt	
+C10		1u			0805				Reichelt	
+C11		1u			0805				Reichelt	
+C12		47u Tantal		1812		
+C13		47u Tantal		1812		
+C14		1u			0805				Reichelt	
+C15		1u			0805				Reichelt	
+D1		LED_GRÜN		0805				Reichelt	
+D2		LED_GELB		0805				Reichelt	
+D3		LED_ROT			0805				Reichelt	
+DS1		DS3231M			SOIC-8-N			Farnell	
+HT1		HT1632C			TQFP52	Ebay China	
+IC1		ATMEGA8-AI		TQFP32	Reichelt	
+P1		DCF_CONN_4		Buchsenleiste			Reichelt	
+P2		5V_CONN_2		Kabel anlöten		
+P3		CONN_3X2		ISP-Stecker			Reichelt	
+P4		Service_CONN_6;		Buchsenleiste, gewinkelt	Reichelt	
+P5		Led_Zeilen_CONN_11;	Kabel anlöten		
+P6		Led_Spalten_CONN_11;	Kabel anlöten		
+P7		CONN_1			Befestigungsloch		
+P8		CONN_1			Befestigungsloch		
+P9		CONN_1			Befestigungsloch		
+P10		CONN_1			Befestigungsloch		
+P11		CONN_1			leer lassen		
+P12		CONN_1			leer lassen		
+P13		CONN_2			leer lassen		
+P14		CONN_2			leer lassen		
+Q1		BC817-40		SOT23-3				Reichelt	
+R1		300			0805				Reichelt	
+R2		10k			0805				Reichelt	
+R3		220			0805				Reichelt	
+R4		100			0805				Reichelt	
+R5		5,6k			0805				Reichelt	
+R6		33			0805				Reichelt	
+R7		33			0805				Reichelt	
+R8		33			0805				Reichelt	
+R9		33			0805				Reichelt	
+R10		33			0805				Reichelt	
+R11		33			0805				Reichelt	
+R12		33			0805				Reichelt	
+R13		33			0805				Reichelt	
+R14		33			0805				Reichelt	
+R15		33			0805				Reichelt	
+R16		33			0805				Reichelt	
+R17		820			0805				Reichelt	
+R18		820			0805				Reichelt	
+R19		100			0805				Reichelt	
+R20		100			0805				Reichelt	
+R21		1k			0805				Reichelt	
+R22		1K			0805				Reichelt	
+R23		1K			0805				Reichelt	
+R24		1K			0805				Reichelt	
+U1		LM317			SOT-223				Reichelt	
+U3		74HC04			SOIC-14				Reichelt	
+X1		16MHz			HC-49				Reichelt	
