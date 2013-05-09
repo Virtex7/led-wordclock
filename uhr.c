@@ -753,6 +753,7 @@ int main (void) {
 			nachtmodus = 0;
 			  
 			}
+		}
 		if (fixed == RTC_OFF_PRESYNC) {
 			PORTC ^= (1<<PC0);
 			// Solange kein valides DCF77 Signal blinkt PowerLED (Extern per Draht angeschlossen)
