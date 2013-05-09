@@ -35,7 +35,7 @@
 #define RTC_FIRST_SYNC 1
 #define RTC_OFF_PRESYNC 2
 
-//Definier wie lange in der Nacht auf ein DCF77 Signal gewartet werden soll (Angabe in 10 Minuten Schritten)
+//Definiert wie lange in der Nacht auf ein DCF77 Signal gewartet werden soll (Angabe in x * 10 Minuten)
 #define nightSyncTime 4
 
 
@@ -131,7 +131,7 @@ uint8_t RTC_read_error = 0;
 uint8_t last_sync_min = 0;
 uint8_t last_sync_std = 0;
 
-/*
+/*  DEBUG SECTION 
  * 
  *  LED_ROT = Anzeige
  *  LED_GELB = Sync in der Nacht nicht erfolgreich
@@ -169,9 +169,6 @@ uint8_t last_sync_std = 0;
  *  DEBUG_LCD
  *  Ausgabe der Uhrzeit in Stunden, Minuten und Sekunden auf einem 2x20 Zeichen LCD
  *
- *  DISPLAY_SCROLL
- *  Matrix-ähnliche Lautschrift wenn die Uhr die Anzeige wechselt.
- *  gehört zum normalen Programm der Uhr.
  *
  *  RTC_NEU
  *  Ansteuerung der neuen RTC (DS3231)
@@ -197,10 +194,29 @@ uint8_t last_sync_std = 0;
 #define DEBUG_RTC_READ
 // #define DEBUG_DISPLAY
 // #define DEBUG_LCD
+
+/*
+ * Feature Section 
+ * 
+ * 
+ *  DISPLAY_SCROLL
+ *  Matrix-ähnliche Lautschrift wenn die Uhr die Anzeige wechselt.
+ *  gehört zum normalen Programm der Uhr.
+ * 
+ * 
+ * 
+ * DISPLAY_DIMMEN
+ * Definiert das Dimmen des Displays zwischen den Uhrzeiten DIMMEN_START und DIMMEN_END
+ * 
+ * 
+ * 
+ *  
+*/
+//#define DISPLAY_DIMMEN
+#define DIMMEN_START 22
+#define DIMMEN_END 7
+
 #define DISPLAY_SCROLL
-
-// #define dimmen
-
 
 
 
@@ -706,12 +722,12 @@ int main (void) {
 	
 	while(1) {
 		
-		#ifdef dimmen // Hier wird der Code für das Dimmen des LCDs definiert
-		if (((stundenValid > 22) | (stundenValid < 7)) & (set_dimmen == 0))	{
+		#ifdef DISPLAY_DIMMEN // Hier wird der Code für das Dimmen des LCDs definiert
+		if (((stundenValid > DIMMEN_START) | (stundenValid < DIMMEN_END)) & (set_dimmen == 0))	{
 			htCommand(0b10100101);
 			set_dimmen = 1;
 		}
-		if ((stundenValid < 22) & (stundenValid > 7) & (set_dimmen == 1)){
+		if ((stundenValid < DIMMEN_START) & (DIMMEN_END > 7) & (set_dimmen == 1)){
 			htCommand(0b10111101);
 			set_dimmen = 0;
 		}
