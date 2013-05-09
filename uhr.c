@@ -35,6 +35,9 @@
 #define RTC_FIRST_SYNC 1
 #define RTC_OFF_PRESYNC 2
 
+//Definier wie lange in der Nacht auf ein DCF77 Signal gewartet werden soll (Angabe in 10 Minuten Schritten)
+#define nightSyncTime 4
+
 
 #include "../atmel/lib/0.1.3/global.h"
 #include "../atmel/lib/0.1.3/io/io.h"
@@ -116,6 +119,7 @@ uint16_t funkuhr [11] = {0,0,0,0,577,577,833,321,257,1,1};
 
 volatile uint8_t stundenValid = 0, minutenValid = 0, sekundenValid=0;
 volatile uint16_t nightTimerOverflow= 0; // Zähler um die 3 Uhr Nacht Periode zu unterbrechen
+volatile uint8_t nightTimerOverflow_10Min = 0;
 uint16_t temp[11];
 uint8_t DisplayOffTimer = 0;
 
@@ -727,47 +731,28 @@ int main (void) {
 			sei(); // Und es seien wieder Interrupts!
 		} 
 		
-		//Es ist sechs Uhr Nachts, das DCF Modul wird abgeschaltet, KEIN SYNC erfolgt!
-		if ((stundenValid == 6) && (nachtmodus == 1)) { // TODO: Bedinung muss abfragen ob man sich im Nachtmodus befindet 
-			//Schreiben von Zeit des Letzten Syncs
-			if (fixed == RTC_FIX) {
-				i2c_tx(last_sync_min,0x0C,0b11010000);
-				i2c_tx(last_sync_std,0x0D,0b11010000);
-			}
-			dcfOff();
-			fixed = RTC_FIX; // Uhr wieder aktiv - RTC-Modus
-			#ifdef DEBUG_RTC
-			uart_tx_strln("deaktiviere Interrupt (stdvalid = 6)");
-			#endif
-			cli(); // Interrupts wieder aus - nach 6 Uhr früh kein DCF Empfang mehr.
-			//Hier wird der Fehlerwert von Sync_Fehler Nacht  erhöht und geschrieben
-			i2c_tx(++SyncNotNacht,0x0A,0b11010000);
-			
-			nachtmodus = 0; // zurück zu normalem Betrieb
-		}
-		
 		// Bedinung zum Testen der Nachabschaltung
-		// Bedingt die 500 Sekündige Aktualisierung der angezeigten Uhrzeit
 		if ((nachtmodus == 1) && (fixed == RTC_OFF_PRESYNC)) {
-			if (nightTimerOverflow >= 64000) // Das sollte irgendwelche 1800 Sekunden darstellen. 
+		  
+		  if(nightTimerOverflow >= 21300) // Es sind 10 Minuten im Interrupt abgelaufen
+		    {
+			  nightTimerOverflow_10Min++;
+		    }
+		    
+		  if (nightTimerOverflow_10Min >= nightSyncTime) // Das sollen NightSyncTime * 10 Minuten darstellen
 			{
 			cli();
 			TIMSK |= (0<<TOIE0);
 			TCCR0 = (0<<CS02) | (0<<CS00);
 			htDisplOn();
 			nightTimerOverflow = 0;
+			nightTimerOverflow_10Min = 0;
+			dcfOff();
+			fixed= RTC_FIX;
+			i2c_tx(++SyncNotNacht,0x0A,0b11010000);
+			nachtmodus = 0;
+			  
 			}
-			
-			#ifdef DEBUG_RTC
-			uart_tx_strln("deaktiviere Interrupt (nachtmodus = 1 und fixed)");
-			#endif
-			cli();
-			rtcRead();
-			timeToArray();
-			time2LCD();
-			sei();
-			}
-		
 		if (fixed == RTC_OFF_PRESYNC) {
 			PORTC ^= (1<<PC0);
 			// Solange kein valides DCF77 Signal blinkt PowerLED (Extern per Draht angeschlossen)
