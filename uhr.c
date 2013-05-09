@@ -114,7 +114,8 @@ const uint16_t uhr [11] PROGMEM = {0,0,0,0,0,0,0,0,1,1,1};
 uint16_t Allon [11] = {2047,2047,2047,2047,2047,2047,2047,2047,2047,2047,2047};
 uint16_t funkuhr [11] = {0,0,0,0,577,577,833,321,257,1,1};
 
-volatile uint8_t stundenValid = 0, minutenValid = 0, sekundenValid=0;;
+volatile uint8_t stundenValid = 0, minutenValid = 0, sekundenValid=0;
+volatile uint16_t nightTimerOverflow= 0; // Zähler um die 3 Uhr Nacht Periode zu unterbrechen
 uint16_t temp[11];
 uint8_t DisplayOffTimer = 0;
 
@@ -188,7 +189,7 @@ uint8_t last_sync_std = 0;
 #define DEBUG_RTC
 // #define DEBUG_RTC_TEST
 // #define RTC_RESET
-#define RTC_3UHR_TEST
+//#define RTC_3UHR_TEST
 #define DEBUG_RTC_READ
 // #define DEBUG_DISPLAY
 // #define DEBUG_LCD
@@ -450,7 +451,10 @@ void timeToArray(void) {
 		htWriteDisplay(temp);
 	}
 }
-
+ISR (TIMER0_OVF_vect) // Wenn der 8 Bit Timer abgelaufen ist, wird nightTimerOverflow um 1 erhöht. 
+{
+ nightTimerOverflow++;
+}
 
 ISR(INT0_vect,ISR_BLOCK) { // Pinchange-Interrupt an INT0 (DCF-Signal IN)
 // Dieser Interrupt verarbeitet das DCF-Signal, also High- und Lowphasen!!
@@ -718,11 +722,13 @@ int main (void) {
 			fixed = RTC_OFF_PRESYNC; 
 			nachtmodus = 1;
 			dcfOn();
+			TCCR0 = (1<<CS02) | (1<<CS00); //Starten des Timers für den Interrupt
+			TIMSK |= (1<<TOIE0);
 			sei(); // Und es seien wieder Interrupts!
 		} 
 		
 		//Es ist sechs Uhr Nachts, das DCF Modul wird abgeschaltet, KEIN SYNC erfolgt!
-		if (stundenValid == 6) { // TODO: Bedinung muss abfragen ob man sich im Nachtmodus befindet 
+		if ((stundenValid == 6) && (nachtmodus == 1)) { // TODO: Bedinung muss abfragen ob man sich im Nachtmodus befindet 
 			//Schreiben von Zeit des Letzten Syncs
 			if (fixed == RTC_FIX) {
 				i2c_tx(last_sync_min,0x0C,0b11010000);
@@ -743,12 +749,15 @@ int main (void) {
 		// Bedinung zum Testen der Nachabschaltung
 		// Bedingt die 500 Sekündige Aktualisierung der angezeigten Uhrzeit
 		if ((nachtmodus == 1) && (fixed == RTC_OFF_PRESYNC)) {
-			if (DisplayOffTimer < 18)	{
-				DisplayOffTimer++;
+			if (nightTimerOverflow >= 64000) // Das sollte irgendwelche 1800 Sekunden darstellen. 
+			{
+			cli();
+			TIMSK |= (0<<TOIE0);
+			TCCR0 = (0<<CS02) | (0<<CS00);
+			htDisplOn();
+			nightTimerOverflow = 0;
 			}
-			if (DisplayOffTimer == 18) { 
-				htDisplOn(); //Display wird nach zirka 1200 Sekunden wieder angeschaltet
-			}
+			
 			#ifdef DEBUG_RTC
 			uart_tx_strln("deaktiviere Interrupt (nachtmodus = 1 und fixed)");
 			#endif
@@ -757,8 +766,7 @@ int main (void) {
 			timeToArray();
 			time2LCD();
 			sei();
-			delays(200);//TODO: 200 Sekunden Wartezeit = 3,3 Minuten * 180 = 600 Minuten = 10 Stunden !! Eindeutig zu lange !
-		}
+			}
 		
 		if (fixed == RTC_OFF_PRESYNC) {
 			PORTC ^= (1<<PC0);
