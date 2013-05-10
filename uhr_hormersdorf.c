@@ -1,6 +1,6 @@
 /*
  *    Filename: uhr.c
- *     Version: 0.2.5
+ *     Version: 0.2.4
  * Description: Ansteuerung für eine umgangssprachliche Uhr
  *     License: GPLv3 or later
  *     Depends:     global.h, io.h, stdio.h, pgmspace.h, interrupt.h
@@ -87,32 +87,36 @@ uint8_t ERR = 0; // Variable (global)
 #define EINS_LOW  (uint16_t)156*140
 #define EINS_HIGH (uint16_t)156*230
 
-const uint16_t esIst [11] PROGMEM = {1024,1024,0,1024,1024,1024,0,0,0,0,0};
-const uint16_t kurz [11] PROGMEM = {0,0,0,0,64,64,64,64,0,0,0};
-const uint16_t minVor [11] PROGMEM = {0,0,0,0,0,0,0,512,512,512,0};
-const uint16_t minNach [11] PROGMEM = {256,256,256,256,0,0,0,0,0,0,0};
-const uint16_t minFuenf [11] PROGMEM = {0,0,0,0,0,0,0,1024,1024,1024,1024};
-const uint16_t minZehn [11] PROGMEM = {512,512,512,512,0,0,0,0,0,0,0};
-const uint16_t minViertel [11] PROGMEM = {0,0,0,0,256,256,256,256,256,256,256};
-const uint16_t minHalb [11] PROGMEM = {128,128,128,128,0,0,0,0,0,0,0};
+const uint16_t minEine [11] PROGMEM = {256,256,384,0,0,0,0,0,0,0,0};
+const uint16_t minZwei [11] PROGMEM = {1024,1024,1024,1024,0,0,0,0,0,0,0};
+const uint16_t minVier [11] PROGMEM = {0,0,0,0,512,512,512,512,0,0,0};
+const uint16_t minFuenf [11] PROGMEM = {0,0,0,0,0,0,0,128,128,128,128};
+const uint16_t minSieben [11] PROGMEM = {0,0,0,0,0,1024,1024,1024,1024,1024,1024};
+const uint16_t minAcht [11] PROGMEM = {0,0,0,0,256,256,256,256,0,0,0};
+const uint16_t minZehn [11] PROGMEM = {0,128,128,128,128,0,0,0,0,0,0};
+const uint16_t minElf [11] PROGMEM = {0,0,0,0,0,0,0,0,256,256,256};
 
-const uint16_t stdEin [11] PROGMEM = {64,64,64,0,0,0,0,0,0,0,0};
-const uint16_t stdEins [11] PROGMEM = {64,64,64,64,0,0,0,0,0,0,0};
-const uint16_t stdZwei [11] PROGMEM = {0,0,0,0,0,0,0,64,64,64,64};
-const uint16_t stdDrei [11] PROGMEM = {32,32,32,32,0,0,0,0,0,0,0};
-const uint16_t stdVier [11] PROGMEM = {0,0,0,0,0,0,0,32,32,32,32};
-const uint16_t stdFuenf [11] PROGMEM = {16,16,16,16,0,0,0,0,0,0,0};
-const uint16_t stdSechs [11] PROGMEM = {0,0,0,0,0,0,16,16,16,16,16};
-const uint16_t stdSieben [11] PROGMEM = {8,8,8,8,8,8,0,0,0,0,0};
-const uint16_t stdAcht [11] PROGMEM = {0,0,0,0,0,0,0,8,8,8,8};
-const uint16_t stdNeun [11] PROGMEM = {0,4,4,4,4,0,0,0,0,0,0};
-const uint16_t stdZehn [11] PROGMEM = {0,0,0,0,0,0,0,4,4,4,4};
-const uint16_t stdElf [11] PROGMEM = {0,0,0,0,0,0,0,0,2,2,2};
-const uint16_t stdZwoelf [11] PROGMEM = {2,2,2,2,2,0,0,0,0,0,0};
+const uint16_t minViertel [11] PROGMEM = {0,0,0,0,512,512,512,512,512,512,512};
+const uint16_t minHalb [11] PROGMEM = {64,64,64,64,0,0,0,0,0,0,0};
+const uint16_t minDreiViertel [11] PROGMEM = {512,512,512,512,512,512,512,512,512,512,512};
+const uint16_t minUm [11] PROGMEM = {0,0,0,0,0,128,128,0,0,0,0};
 
-const uint16_t stdVor [11] PROGMEM = {0,0,0,0,128,128,128,0,0,0,0};
-const uint16_t stdNach [11] PROGMEM = {0,0,0,0,0,0,0,128,128,128,128};
+const uint16_t stdEins [11] PROGMEM = {,16,16,16,16,0,0,0,0,0,0};
+const uint16_t stdZwei [11] PROGMEM = {1,1,1,1,0,0,0,0,0,0,0};
+const uint16_t stdDrei [11] PROGMEM = {0,0,0,0,0,0,0,2,2,2,2};
+const uint16_t stdVier [11] PROGMEM = {2,2,2,2,0,0,0,0,0,0,0};
+const uint16_t stdFuenf [11] PROGMEM = {0,0,0,0,8,8,8,8,0,0,0};
+const uint16_t stdSechs [11] PROGMEM = {0,0,0,0,16,16,16,16,16,0,0};
+const uint16_t stdSieben [11] PROGMEM = {0,32,32,32,32,32,32,0,0,0,0};
+const uint16_t stdAcht [11] PROGMEM = {0,0,0,0,4,4,4,4,0,0,0};
+const uint16_t stdNeun [11] PROGMEM = {0,0,0,0,0,0,32,32,32,32,0};
+const uint16_t stdZehn [11] PROGMEM = {4,4,4,4,0,0,0,0,0,0,0};
+const uint16_t stdElf [11] PROGMEM = {0,0,0,0,0,0,0,0,4,4,4};
+const uint16_t stdZwoelf [11] PROGMEM = {8,8,8,8,8,0,0,0,0,0,0};
+
 const uint16_t uhr [11] PROGMEM = {0,0,0,0,0,0,0,0,1,1,1};
+const uint16_t ziffern [11] PROGMEM = {0,0,0,0,64,64,64,64,64,64,64};
+const uint16_t ziffer [11] PROGMEM = {0,0,0,0,64,64,64,64,64,64,0};
 
 uint16_t Allon [11] = {2047,2047,2047,2047,2047,2047,2047,2047,2047,2047,2047};
 uint16_t funkuhr [11] = {0,0,0,0,577,577,833,321,257,1,1};
@@ -120,6 +124,7 @@ uint16_t funkuhr [11] = {0,0,0,0,577,577,833,321,257,1,1};
 volatile uint8_t stundenValid = 0, minutenValid = 0, sekundenValid=0;
 volatile uint16_t nightTimerOverflow= 0; // Zähler um die 3 Uhr Nacht Periode zu unterbrechen
 volatile uint8_t nightTimerOverflow_10Min = 0;
+
 uint16_t temp[11];
 uint8_t DisplayOffTimer = 0;
 
@@ -344,78 +349,56 @@ void clearTemp(void) {
 void timeToArray(void) {
 	if(minutenValid%5 == 0) { // minuten muss durch 5 Teilbar sein.
 		clearTemp();
-		addArray(esIst); // Grundsätzlich soll "Es ist" angezeigt werden
 		switch (minutenValid) {
 			case 5:
-				addArray(minFuenf);
-				addArray(minNach);
+				addArray(minEine);
+				addArray(ziffer);
 				break;
 			case 10:
-				addArray(minZehn);
-				addArray(stdNach);
+				addArray(minZwei);
+				addArray(ziffern);
 				break;
 			case 15:
 				addArray(minViertel);
-				addArray(stdNach);
 				break;
 			case 20:
-				addArray(minZehn);
-				addArray(minVor);
-				addArray(minHalb);
-				stundenValid++;
+				addArray(minVier);
+				addArray(ziffern);
 				break;
 			case 25:
 				addArray(minFuenf);
-				addArray(minVor);
-				addArray(minHalb);
-				stundenValid++;
+				addArray(ziffern);
 				break;
 			case 30:
 				addArray(minHalb);
-				stundenValid++;
 				break;
 			case 35:
-				addArray(minFuenf);
-				addArray(minNach);
-				addArray(minHalb);
-				stundenValid++;
+				addArray(minSieben);
+				addArray(ziffern);
 				break;
 			case 40:
-				addArray(minZehn);
-				addArray(minNach);
-				addArray(minHalb);
-				stundenValid++;
+				addArray(minAcht);
+				addArray(ziffern);
 				break;
 			case 45:
-				addArray(minViertel);
-				addArray(stdVor);
-				stundenValid++;
+				addArray(minDreiViertel);
 				break;
 			case 50:
 				addArray(minZehn);
-				addArray(minVor);
-				stundenValid++;
+				addArray(ziffern);
 				break;
 			case 55:
-				addArray(minFuenf);
-				addArray(minVor);
-				stundenValid++;
+				addArray(minElf);
+				addArray(ziffern);
 				break;
 			case 0:
-				addArray(uhr);
+				addArray(minUm);
 				break;
 		}
 		switch (stundenValid) {
 			case 1:
 			case 13:
-				if (minutenValid != 0)
-				{
-					addArray(stdEins);
-				}
-				else
-				{
-					addArray(stdEin);
-				}
+				addArray(stdEins);
 				break;
 			case 2:
 			case 14:
@@ -462,10 +445,6 @@ void timeToArray(void) {
 			case 0:
 				addArray(stdZwoelf);
 				break;
-		}
-		if ((minutenValid == 0) || (minutenValid == 5) || (minutenValid == 10) || (minutenValid == 15)) {
-		} else {
-			stundenValid--; // setze stundenValid wieder auf richtigen Wert
 		}
 		
 		htWriteDisplay(temp);
