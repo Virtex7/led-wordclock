@@ -1,6 +1,6 @@
 /*
  *    Filename: uhr.c
- *     Version: 0.2.4
+ *     Version: 0.2.5
  * Description: Ansteuerung für eine umgangssprachliche Uhr
  *     License: GPLv3 or later
  *     Depends:     global.h, io.h, stdio.h, pgmspace.h, interrupt.h
