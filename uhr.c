@@ -24,6 +24,7 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+ #define FIRMWARE_VERSION "0.2.5"
 
 #define WORDCLOCK_MIRROR
 #define POWER_LED PC0
@@ -647,12 +648,12 @@ void delays(uint8_t delay){
 
 
 int main (void) {
-	DDRB  |= (1<<PB1);
 	DDRC  |= (1<<PC0) | (1<<PC2) | (1<<PC3) | (1<<PC4) | (1<<PC5);
 	DDRD  |= (1<<PD1) | (1<<PD5) | (1<<PD6) | (1<<PD7); //Definieren der drei LEDs und des UART-TX als Output
 	PORTB |= (1<<PB2); // Pullup DEBUG-Jumper
 	PORTC |= (1<<PC0) | (1<<PC2) | (1<<PC3) | (1<<PC5); // Power LED, leuchtet; CS, RD, WR sind idle HIGH
-	PORTD |= (1<<PD3);
+	PORTD |= (1<<PD3); //RTC_1 hz output
+	
 	#ifdef HW_4_0
 	DDRC  |= (1<<PC1); // Output für das DCF Modul
 	PORTC |= (1<<PC1); // DCF Modul wird ausgeschalten (Invertierter PIN)
@@ -897,7 +898,8 @@ int main (void) {
 			
 			#ifdef DEBUG_RTC
 			if ((minutenValid %5 == 0) && (sekundenValid == 05)) {
-				uart_tx_strln("Software-Revision: 0.2.4");
+				uart_tx_strln("Software-Revision:");
+				uart_tx_strln(FIRMWARE_VERSION);
 				uart_tx_str("Anzahl erfolgreicher Syncs: ");
 				uart_tx_dec(Syncnacht);
 				uart_tx_newline();
