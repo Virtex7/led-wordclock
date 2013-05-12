@@ -169,7 +169,6 @@ uint8_t last_sync_std = 0;
  *  DEBUG_LCD
  *  Ausgabe der Uhrzeit in Stunden, Minuten und Sekunden auf einem 2x20 Zeichen LCD
  *
- *
  *  RTC_NEU
  *  Ansteuerung der neuen RTC (DS3231)
  *  Enthält einen MEMS-Quarz und ist so einfacher als die DS1307 anzuschließen
@@ -497,20 +496,21 @@ void timeToArray(void) {
 		htWriteDisplay(temp);
 	}
 }
+
 #ifndef HW_0_4
-ISR (TIMER0_OVF_vect) // Wenn der 8 Bit Timer abgelaufen ist, wird nightTimerOverflow um 1 erhöht. 
-{
- nightTimerOverflow++;
+ISR (TIMER0_OVF_vect) { // Wenn der 8 Bit Timer abgelaufen ist, wird nightTimerOverflow um 1 erhöht. 
+	nightTimerOverflow++;
 }
 #endif
+
 #ifdef HW_0_4
 #ifndef HW_0_4
-ISR (INT1_vect,ISR_BLOCK) // Wenn der 8 Bit Timer abgelaufen ist, wird nightTimerOverflow um 1 erhöht. 
-{
- nightTimerOverflow++;
+ISR (INT1_vect,ISR_BLOCK) { // Wenn die RTC einen Puls abgibt (1Hz), wird nightTimerOverflow um 1 erhöht. 
+	nightTimerOverflow++;
 }
 #endif
 #endif
+
 ISR(INT0_vect,ISR_BLOCK) { // Pinchange-Interrupt an INT0 (DCF-Signal IN)
 // Dieser Interrupt verarbeitet das DCF-Signal, also High- und Lowphasen!!
 
