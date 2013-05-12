@@ -51,7 +51,6 @@
 #include "../atmel/lib/0.1.3/io/serial/uart.h"
 
 // LCD
-
 #define LCD_SHIFT_PORT PORTC
 #define LCD_SHIFT_DDR DDRC
 #define LCD_SHIFT_DATA_PIN PC5
@@ -169,7 +168,6 @@ uint8_t last_sync_std = 0;
  *  DEBUG_LCD
  *  Ausgabe der Uhrzeit in Stunden, Minuten und Sekunden auf einem 2x20 Zeichen LCD
  *
- *
  *  RTC_NEU
  *  Ansteuerung der neuen RTC (DS3231)
  *  Enthält einen MEMS-Quarz und ist so einfacher als die DS1307 anzuschließen
@@ -255,8 +253,9 @@ void rtcWrite(uint8_t hr, uint8_t min) {
 	fixed = RTC_FIRST_SYNC;
 	#endif
 	uint8_t i=3;
-	uint8_t min_tx = ((min/10)<<4) | (min%10);
+	uint8_t min_tx = ((min/10)<<4) | (min%10); // Erzeugung von BCD-Code-Notation h/min
 	uint8_t hr_tx =  ((hr/10)<<4) | (hr%10);
+	// while Schleife, damit die RTC bei schlechter Verbindung bist zu 3 mal geschrieben wird.
 	while(i) {
 		if(fixed == RTC_FIRST_SYNC) { // fixed sorgt dafür, dass die RTC nur ein mal geschrieben wird
 		} else {
@@ -612,11 +611,16 @@ void delays(uint8_t delay){
 
 
 int main (void) {
-	DDRB  |= (1<<PB1);
-	DDRC  |= (1<<PC0) | (1<<PC2) | (1<<PC3) | (1<<PC4) | (1<<PC5);
-	DDRD  |= (1<<PD1) | (1<<PD5) | (1<<PD6) | (1<<PD7); //Definieren der drei LEDs und des UART-TX als Output
-	PORTB |= (1<<PB2); // Pullup DEBUG-Jumper
+ 	DDRB  |= (1<<PB0) | (1<<PB1);
+	DDRC  |= (1<<PC0) | (1<<PC1) | (1<<PC2) | (1<<PC3) | (1<<PC4) | (1<<PC5);
+	// Definieren der drei LEDs und des UART-TX als Output
+	DDRD  |= (1<<PD1) | (1<<PD5) | (1<<PD6) | (1<<PD7);
+	
+	// Pullup DEBUG-Jumper
+	PORTB |= (1<<PB2);
+	
 	PORTC |= (1<<PC0) | (1<<PC2) | (1<<PC3) | (1<<PC5); // Power LED, leuchtet; CS, RD, WR sind idle HIGH
+	
 	PORTD |= (1<<PD3);
 	
 	
