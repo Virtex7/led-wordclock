@@ -1,6 +1,6 @@
 /*
  *    Filename: uhr.c
- *     Version: 0.2.7
+ *     Version: 0.2.8
  * Description: Ansteuerung für eine umgangssprachliche Uhr
  *     License: GPLv3 or later
  *     Depends:     global.h, io.h, stdio.h, pgmspace.h, interrupt.h
@@ -24,7 +24,7 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
- #define FIRMWARE_VERSION "0.2.7"
+ #define FIRMWARE_VERSION "0.2.8"
 
 
 
@@ -110,14 +110,7 @@
  *
  * nightSyncTime
  * Definiert in 10 Minuten Schritten wie lange das Display in der Nacht aus ist.
- *
- *
- *
- *
- *
- *
- *
- 
+  
 */
 //#define DISPLAY_DIMMEN
 #define DIMMEN_START 22
@@ -232,6 +225,7 @@ uint16_t funkuhr [11] = {0,0,0,0,577,577,833,321,257,1,1};
 volatile uint8_t stundenValid = 0, minutenValid = 0, sekundenValid=0;
 volatile uint16_t nightTimerOverflow= 0; // Zähler um die 3 Uhr Nacht Periode zu unterbrechen
 volatile uint8_t nightTimerOverflow_10Min = 0;
+volatile uint8_t empfangFehler = 0, fixed = RTC_OFF_PRESYNC;
 uint16_t temp[11];
 uint8_t DisplayOffTimer = 0;
 
@@ -281,7 +275,6 @@ void uart_init(void) {
 	UCSRC = (1<<URSEL) | (1<<USBS) | (1<<UCSZ1) | (1<<UCSZ0);
 }
 
-volatile uint8_t empfangFehler = 0, fixed = RTC_OFF_PRESYNC;
 void rtcWrite(uint8_t hr, uint8_t min) {
 	#ifdef DEBUG_RTC_TEST
 	fixed = RTC_FIRST_SYNC;
@@ -648,9 +641,6 @@ void delays(uint8_t delay){
 	}
 }
 
-
-
-
 int main (void) {
 	DDRC  |= (1<<PC0) | (1<<PC2) | (1<<PC3) | (1<<PC4) | (1<<PC5);
 	DDRD  |= (1<<PD1) | (1<<PD5) | (1<<PD6) | (1<<PD7); //Definieren der drei LEDs und des UART-TX als Output
@@ -931,4 +921,3 @@ int main (void) {
 	}
 	return 0;
 }
-
