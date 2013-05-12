@@ -1,6 +1,6 @@
 /*
  *    Filename: uhr.c
- *     Version: 0.2.5
+ *     Version: 0.2.7
  * Description: Ansteuerung für eine umgangssprachliche Uhr
  *     License: GPLv3 or later
  *     Depends:     global.h, io.h, stdio.h, pgmspace.h, interrupt.h
@@ -24,21 +24,126 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
- #define FIRMWARE_VERSION "0.2.5"
+ #define FIRMWARE_VERSION "0.2.7"
 
-#define WORDCLOCK_MIRROR
-#define POWER_LED PC0
+
+
+/*  DEBUG SECTION 
+ * 
+ *  LED_ROT = Anzeige
+ *  LED_GELB = Sync in der Nacht nicht erfolgreich
+ *  LED_GRÜN = DCF-SIGNAL
+ *
+ *  UART-Einstellung: 57600 BAUD, 1 Stoppbits, 8 Bit Frame, no Parity
+ *
+ *
+ *  DEBUG_TIMER:
+ *  Ausgabe des erfassten Timerwertes in ms für den High-Pegel des DCF-Signals (roh) aus.
+ *
+ *  DEBUG_ERFASSUNG:
+ *  gibt die erfassten DCF-Bits aus (60Bit Wort, LSB first)
+ *
+ *  DEBUG_DATENWERT:
+ *  Ausgabe des Teils des erfassten Wertes, in dem die Uhrzeit steht.
+ *  (binär, Reihenfolge wie DCF)
+ *
+ *  DEBUG_ZEIT
+ *  Ausgabe der berechneten Uhrzeit
+ *
+ *  DEBUG_RTC
+ *  gibt den Zeitwert der RTC und den aktuellen DCF-Wert in BCD-Code aus
+ *  beide Werte stehen zum besseren Vergleich untereinander.
+ *
+ *  DEBUG_RTC_TEST
+ *  RTC wird nicht geschrieben sondern nur gelesen, ideal zum Test der RTC-Genauigkeit.
+ *  OBSOLET geworden durch erwieiterte RTC-Funktionalitäten
+ *
+ *  DEBUG_RTC_READ
+ *  UART-Ausgabe beim halbsekündlichen Auslesen der RTC (viel Output!)
+ *
+ *  DEBUG_DISPLAY
+ *
+ *  DEBUG_LCD
+ *  Ausgabe der Uhrzeit in Stunden, Minuten und Sekunden auf einem 2x20 Zeichen LCD
+ *
+ *  RTC_NEU
+ *  Ansteuerung der neuen RTC (DS3231)
+ *  Enthält einen MEMS-Quarz und ist so einfacher als die DS1307 anzuschließen
+ *
+ *  RTC_3UHR_TEST
+ *  Setzt die RTC am Anfang der Main auf kurz vor drei Uhr
+ *
+ *
+ */
+
+#define DEBUG_PIN PB2
+#define DEBUG_PORT PINB
+
+#define DEBUG_TIMER
+#define DEBUG_ERFASSUNG
+// #define DEBUG_DATENWERT
+#define DEBUG_ZEIT
+#define DEBUG_RTC
+// #define DEBUG_RTC_TEST
+// #define RTC_RESET
+//#define RTC_3UHR_TEST
+#define DEBUG_RTC_READ
+// #define DEBUG_DISPLAY
+// #define DEBUG_LCD
 
 /*
- * Sprechende Bezeichner für die Variable fixed
- */
-#define RTC_FIX 0
-#define RTC_FIRST_SYNC 1
-#define RTC_OFF_PRESYNC 2
+ * Feature Section 
+ * 
+ * 
+ *  DISPLAY_SCROLL
+ *  Matrix-ähnliche Lautschrift wenn die Uhr die Anzeige wechselt.
+ *  gehört zum normalen Programm der Uhr.
+ * 
+ * 
+ * 
+ * DISPLAY_DIMMEN
+ * Definiert das Dimmen des Displays zwischen den Uhrzeiten DIMMEN_START und DIMMEN_END
+ * 
+ * WORDCLOCK_MIRROR
+ * Spiegelt die Matrix des Displays ( Je nachdem wie man die Verkabelung anfänt)
+ *  
+ *
+ * nightSyncTime
+ * Definiert in 10 Minuten Schritten wie lange das Display in der Nacht aus ist.
+ *
+ *
+ *
+ *
+ *
+ *
+ *
+ 
+*/
+//#define DISPLAY_DIMMEN
+#define DIMMEN_START 22
+#define DIMMEN_END 7
 
-//Definiert wie lange in der Nacht auf ein DCF77 Signal gewartet werden soll (Angabe in x * 10 Minuten)
+#define DISPLAY_SCROLL
+
+#define WORDCLOCK_MIRROR
+
 #define nightSyncTime 4
 
+/*
+ * Hardware Selection 
+ * 
+ * 
+ *  HW_0_4
+ * 
+ *   Es wird das neue Hardwareboard 0_4 verwendet 
+ * 
+ * 
+ * 
+ * 
+*/
+#define HW_0_4 
+
+#define POWER_LED PC0
 
 #include "../atmel/lib/0.1.3/global.h"
 #include "../atmel/lib/0.1.3/io/io.h"
@@ -51,6 +156,12 @@
 #define mega8
 #include "../atmel/lib/0.1.3/io/serial/uart.h"
 
+/*
+ * Sprechende Bezeichner für die Variable fixed
+ */
+#define RTC_FIX 0
+#define RTC_FIRST_SYNC 1
+#define RTC_OFF_PRESYNC 2
 // LCD
 
 #define LCD_SHIFT_PORT PORTC
@@ -131,111 +242,6 @@ uint8_t set_dimmen = 0;
 uint8_t RTC_read_error = 0;
 uint8_t last_sync_min = 0;
 uint8_t last_sync_std = 0;
-
-/*  DEBUG SECTION 
- * 
- *  LED_ROT = Anzeige
- *  LED_GELB = Sync in der Nacht nicht erfolgreich
- *  LED_GRÜN = DCF-SIGNAL
- *
- *  UART-Einstellung: 57600 BAUD, 1 Stoppbits, 8 Bit Frame, no Parity
- *
- *
- *  DEBUG_TIMER:
- *  Ausgabe des erfassten Timerwertes in ms für den High-Pegel des DCF-Signals (roh) aus.
- *
- *  DEBUG_ERFASSUNG:
- *  gibt die erfassten DCF-Bits aus (60Bit Wort, LSB first)
- *
- *  DEBUG_DATENWERT:
- *  Ausgabe des Teils des erfassten Wertes, in dem die Uhrzeit steht.
- *  (binär, Reihenfolge wie DCF)
- *
- *  DEBUG_ZEIT
- *  Ausgabe der berechneten Uhrzeit
- *
- *  DEBUG_RTC
- *  gibt den Zeitwert der RTC und den aktuellen DCF-Wert in BCD-Code aus
- *  beide Werte stehen zum besseren Vergleich untereinander.
- *
- *  DEBUG_RTC_TEST
- *  RTC wird nicht geschrieben sondern nur gelesen, ideal zum Test der RTC-Genauigkeit.
- *  OBSOLET geworden durch erwieiterte RTC-Funktionalitäten
- *
- *  DEBUG_RTC_READ
- *  UART-Ausgabe beim halbsekündlichen Auslesen der RTC (viel Output!)
- *
- *  DEBUG_DISPLAY
- *
- *  DEBUG_LCD
- *  Ausgabe der Uhrzeit in Stunden, Minuten und Sekunden auf einem 2x20 Zeichen LCD
- *
- *  RTC_NEU
- *  Ansteuerung der neuen RTC (DS3231)
- *  Enthält einen MEMS-Quarz und ist so einfacher als die DS1307 anzuschließen
- *
- *  RTC_3UHR_TEST
- *  Setzt die RTC am Anfang der Main auf kurz vor drei Uhr
- *
- *
- */
-
-#define DEBUG_PIN PB2
-#define DEBUG_PORT PINB
-
-#define DEBUG_TIMER
-#define DEBUG_ERFASSUNG
-// #define DEBUG_DATENWERT
-#define DEBUG_ZEIT
-#define DEBUG_RTC
-// #define DEBUG_RTC_TEST
-// #define RTC_RESET
-//#define RTC_3UHR_TEST
-#define DEBUG_RTC_READ
-// #define DEBUG_DISPLAY
-// #define DEBUG_LCD
-
-/*
- * Feature Section 
- * 
- * 
- *  DISPLAY_SCROLL
- *  Matrix-ähnliche Lautschrift wenn die Uhr die Anzeige wechselt.
- *  gehört zum normalen Programm der Uhr.
- * 
- * 
- * 
- * DISPLAY_DIMMEN
- * Definiert das Dimmen des Displays zwischen den Uhrzeiten DIMMEN_START und DIMMEN_END
- * 
- * 
- * 
- *  
-*/
-//#define DISPLAY_DIMMEN
-#define DIMMEN_START 22
-#define DIMMEN_END 7
-
-#define DISPLAY_SCROLL
-
-/*
- * Hardware Selection 
- * 
- * 
- *  HW_0_4
- * 
- *   Es wird das neue Hardwareboard 0_4 verwendet 
- * 
- * 
- * 
- *
- * 
- * 
- * 
- * 
- *  
-*/
-#define HW_0_4 
 
 void dcfInit(void) {
 	DDRD | (1<<PD3); // PON
@@ -505,11 +511,9 @@ ISR (TIMER0_OVF_vect) { // Wenn der 8 Bit Timer abgelaufen ist, wird nightTimerO
 #endif
 
 #ifdef HW_0_4
-#ifndef HW_0_4
 ISR (INT1_vect,ISR_BLOCK) { // Wenn die RTC einen Puls abgibt (1Hz), wird nightTimerOverflow um 1 erhöht. 
 	nightTimerOverflow++;
 }
-#endif
 #endif
 
 ISR(INT0_vect,ISR_BLOCK) { // Pinchange-Interrupt an INT0 (DCF-Signal IN)
