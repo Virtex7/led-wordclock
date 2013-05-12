@@ -236,7 +236,7 @@ uint8_t RTC_read_error = 0;
 uint8_t last_sync_min = 0;
 uint8_t last_sync_std = 0;
 
-<<<<<<< HEAD
+
 /*  DEBUG SECTION 
  * 
  *  LED_ROT = Anzeige
@@ -326,8 +326,6 @@ uint8_t last_sync_std = 0;
 
 
 
-=======
->>>>>>> 621dcae7e01cbfbba2551f0c112049eca8dfd636
 void dcfInit(void) {
 	DDRD | (1<<PD3); // PON
 	TCCR1B = (1<<CS12) | (1<<CS10); // Prescaler = 1024
@@ -607,7 +605,7 @@ ISR (INT1_vect,ISR_BLOCK) { // Wenn die RTC einen Puls abgibt (1Hz), wird nightT
 }
 #endif
 
-ISR(INT0_vect,ISR_BLOCK) { // Pinchange-Interrupt an INT0 (DCF-Signal IN)
+ISR (INT0_vect,ISR_BLOCK) { // Pinchange-Interrupt an INT0 (DCF-Signal IN)
 // Dieser Interrupt verarbeitet das DCF-Signal, also High- und Lowphasen!!
 
 static uint32_t datenwert=0;
@@ -623,11 +621,11 @@ if (DEBUG_PORT &= (1 << DEBUG_PIN)) { //Test ob Debug Stecker gelöst
 	PORTD ^= (1<<PD7); //LED an PD7 zeigt das DCF77 Signal an
 }
 
-if(PIND & (1<<PD2)) { // gerade ist HIGH
+if (PIND & (1<<PD2)) { // gerade ist HIGH
 	TCCR1B = (1<<CS11) | (1<<CS10); // Prescaler = 64
 	TCNT1 = 156;
 	
-	if(timerwert_alt > 14000) {
+	if (timerwert_alt > 14000) {
 		sync = 1;
 		i=0;
 		datenwert = 0;
@@ -636,12 +634,12 @@ if(PIND & (1<<PD2)) { // gerade ist HIGH
 		uart_tx_newline();
 		#endif
 		
-		if((minutenDcfLast+1 == minutenDcfAktuell) && (stundenDcfLast == stundenDcfAktuell)) {
+		if ((minutenDcfLast+1 == minutenDcfAktuell) && (stundenDcfLast == stundenDcfAktuell)) {
 			// Vergleich und Setzen der Valid-Uhrzeitvariablen
 			timeValid = 1;
 		} else if ((minutenDcfLast == 59) && (minutenDcfAktuell == 0) && (stundenDcfLast +1 == stundenDcfAktuell)) {
 			timeValid = 1;
-		} else if((minutenDcfLast == 59) && (minutenDcfAktuell == 0) && ((stundenDcfLast == 23) && (stundenDcfAktuell == 0))) {
+		} else if ((minutenDcfLast == 59) && (minutenDcfAktuell == 0) && ((stundenDcfLast == 23) && (stundenDcfAktuell == 0))) {
 			timeValid = 1;
 		} else { // ACHTUNG FEHLER!! (oder erster Empfang nach Inbetriebnahme)
 			empfangFehler++;
@@ -649,7 +647,13 @@ if(PIND & (1<<PD2)) { // gerade ist HIGH
 			uart_tx_strln("Fehler bei Zeitübernahme!");
 			#endif
 		}
-		if(timeValid) { // Zeit ist valide: RTC wird gesetzt
+		if ((minutenDcfAktuell > 59) || (stundenDcfAktuell > 23)) { // offensichtlich Schmarrn.
+			timeValid = 0;
+			#ifdef DEBUG_ZEIT
+			uart_tx_strln("Zeit über 23 Uhr und/oder 59 Minuten. WTF??");
+			#endif
+		}
+		if (timeValid) { // Zeit ist valide: RTC wird gesetzt
 			minutenValid = minutenDcfAktuell;
 			stundenValid = stundenDcfAktuell;
 			rtcWrite(stundenValid,minutenValid);
@@ -665,7 +669,7 @@ if(PIND & (1<<PD2)) { // gerade ist HIGH
 		#endif
 	}
 	
-} else { // gerade ist LOW
+} else { // gerade ist LOW ---> Auswertung!
 	TCCR1B = (1<<CS12) | (1<<CS10); // Prescaler = 1024
 	TCNT1 = 10;
 	#ifdef DEBUG_TIMER
@@ -675,8 +679,8 @@ if(PIND & (1<<PD2)) { // gerade ist HIGH
 	uart_tx_str(" ms");
 	uart_tx_newline();
 	#endif
-	if(sync) {
-		if((NULL_LOW < timerwert_alt) && (timerwert_alt < NULL_HIGH)) { // und wir haben eine NULL
+	if (sync) {
+		if ((NULL_LOW < timerwert_alt) && (timerwert_alt < NULL_HIGH)) { // und wir haben eine NULL
 			i++;
 			; // nullen stehen schon da.
 			#ifdef DEBUG_ERFASSUNG
@@ -740,9 +744,8 @@ void delays(uint8_t delay){
 }
 
 int main (void) {
-<<<<<<< HEAD
  	DDRB  |= (1<<PB0) | (1<<PB1);
-	DDRC  |= (1<<PC0) | (1<<PC1) | (1<<PC2) | (1<<PC3) | (1<<PC4) | (1<<PC5);
+	DDRC  |= (1<<PC0) | (1<<PC2) | (1<<PC3) | (1<<PC4) | (1<<PC5);
 	// Definieren der drei LEDs und des UART-TX als Output
 	DDRD  |= (1<<PD1) | (1<<PD5) | (1<<PD6) | (1<<PD7);
 	
@@ -752,12 +755,6 @@ int main (void) {
 	PORTC |= (1<<PC0) | (1<<PC2) | (1<<PC3) | (1<<PC5); // Power LED, leuchtet; CS, RD, WR sind idle HIGH
 	
 	PORTD |= (1<<PD3);
-=======
-	DDRC  |= (1<<PC0) | (1<<PC2) | (1<<PC3) | (1<<PC4) | (1<<PC5);
-	DDRD  |= (1<<PD1) | (1<<PD5) | (1<<PD6) | (1<<PD7); //Definieren der drei LEDs und des UART-TX als Output
-	PORTB |= (1<<PB2); // Pullup DEBUG-Jumper
-	PORTC |= (1<<PC0) | (1<<PC2) | (1<<PC3) | (1<<PC5); // Power LED, leuchtet; CS, RD, WR sind idle HIGH
-	PORTD |= (1<<PD3); //RTC_1 hz output
 	
 	#ifdef HW_0_4
 	DDRC  |= (1<<PC1); // Output für das DCF Modul
@@ -765,7 +762,6 @@ int main (void) {
 	GICR = (1<<INT1);   // INT1 ist ab hier ein Interrupt-Pin
 	MCUCR = (1<<ISC11) | (1<<ISC10); // INT1 Logic Change Interrupt
 	#endif 
->>>>>>> 621dcae7e01cbfbba2551f0c112049eca8dfd636
 	
 	
 	delayms(100);
