@@ -1,6 +1,6 @@
 /*
  *    Filename: uhr.c
- *     Version: 0.2.8
+ *     Version: 0.2.9
  * Description: Ansteuerung für eine umgangssprachliche Uhr
  *     License: GPLv3 or later
  *     Depends:     global.h, io.h, stdio.h, pgmspace.h, interrupt.h
@@ -24,7 +24,7 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
- #define FIRMWARE_VERSION "0.2.8"
+ #define FIRMWARE_VERSION "0.2.9"
 
 
 
@@ -134,7 +134,7 @@
  * 
  * 
 */
-#define HW_0_4 
+//#define HW_0_4 
 
 #define POWER_LED PC0
 
@@ -246,7 +246,7 @@ void dcfInit(void) {
 inline void dcfOn(void) { //Aktivieren des DCF77 Moduls (PON)
 #ifdef HW_0_4
 cbi(PORTD, PC1);
-delay_ms(2000);
+delayms(2000);
 #endif
 sbi(PORTD, PD3);
 
@@ -255,7 +255,7 @@ sbi(PORTD, PD3);
 inline void dcfOff(void) { //Deaktivieren des DCF77 Moduls (PON)
 #ifdef HW_0_4
 cbi(PORTD, PC1);
-delay_ms(2000);
+delayms(2000);
 #endif
 cbi(PORTD, PD3);
 
