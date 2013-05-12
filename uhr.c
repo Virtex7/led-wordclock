@@ -218,8 +218,24 @@ uint8_t last_sync_std = 0;
 
 #define DISPLAY_SCROLL
 
-
-
+/*
+ * Hardware Selection 
+ * 
+ * 
+ *  HW_0_4
+ * 
+ *   Es wird das neue Hardwareboard 0_4 verwendet 
+ * 
+ * 
+ * 
+ *
+ * 
+ * 
+ * 
+ * 
+ *  
+*/
+#define HW_0_4 
 
 void dcfInit(void) {
 	DDRD | (1<<PD3); // PON
@@ -229,11 +245,21 @@ void dcfInit(void) {
 }
 
 inline void dcfOn(void) { //Aktivieren des DCF77 Moduls (PON)
+#ifdef HW_0_4
+cbi(PORTD, PC1);
+delay_ms(2000);
+#endif
 sbi(PORTD, PD3);
+
 }
 
 inline void dcfOff(void) { //Deaktivieren des DCF77 Moduls (PON)
+#ifdef HW_0_4
+cbi(PORTD, PC1);
+delay_ms(2000);
+#endif
 cbi(PORTD, PD3);
+
 }
 
 void rtcInit(void) {
@@ -471,11 +497,20 @@ void timeToArray(void) {
 		htWriteDisplay(temp);
 	}
 }
+#ifndef HW_0_4
 ISR (TIMER0_OVF_vect) // Wenn der 8 Bit Timer abgelaufen ist, wird nightTimerOverflow um 1 erhöht. 
 {
  nightTimerOverflow++;
 }
-
+#endif
+#ifdef HW_0_4
+#ifndef HW_0_4
+ISR (INT1_vect,ISR_BLOCK) // Wenn der 8 Bit Timer abgelaufen ist, wird nightTimerOverflow um 1 erhöht. 
+{
+ nightTimerOverflow++;
+}
+#endif
+#endif
 ISR(INT0_vect,ISR_BLOCK) { // Pinchange-Interrupt an INT0 (DCF-Signal IN)
 // Dieser Interrupt verarbeitet das DCF-Signal, also High- und Lowphasen!!
 
@@ -618,14 +653,19 @@ int main (void) {
 	PORTB |= (1<<PB2); // Pullup DEBUG-Jumper
 	PORTC |= (1<<PC0) | (1<<PC2) | (1<<PC3) | (1<<PC5); // Power LED, leuchtet; CS, RD, WR sind idle HIGH
 	PORTD |= (1<<PD3);
+	#ifdef HW_4_0
+	DDRC  |= (1<<PC1); // Output für das DCF Modul
+	PORTC |= (1<<PC1); // DCF Modul wird ausgeschalten (Invertierter PIN)
+	GICR = (1<<INT1);   // INT1 ist ab hier ein Interrupt-Pin
+	MCUCR = (1<<ISC11) | (1<<ISC10); // INT1 Logic Change Interrupt
+	#endif 
 	
 	
 	delayms(100);
 	uart_init();		// Akivierung Kommuniaktion UART 56,8kBaud 8n1
 	dcfInit();		// Pon als Output, Setzen der Timereigenschaften
 	i2c_init();		// Pullup SDA, Initzialisierung I2C
-// 	rtcInit();		// Starte Oszillator der RTC
-	
+
 	uart_tx_strln("DCF-Wordclock!"); //
 	htInit();
 	
@@ -747,6 +787,7 @@ int main (void) {
 			sei(); // Und es seien wieder Interrupts!
 		} 
 		
+		#ifndef HW_0_4
 		// Bedinung zum Testen der Nachabschaltung
 		if ((nachtmodus == 1) && (fixed == RTC_OFF_PRESYNC)) {
 		  
@@ -770,6 +811,23 @@ int main (void) {
 			  
 			}
 		}
+		#endif
+		#ifdef HW_0_4
+		// Bedinung zum Testen der Nachabschaltung
+			if((nightTimerOverflow/600) >= nightSyncTime) // Es sind 10 Minuten im Interrupt abgelaufen
+		    {
+			cli();
+			htDisplOn();
+			nightTimerOverflow = 0;
+			dcfOff();
+			fixed= RTC_FIX;
+			i2c_tx(++SyncNotNacht,0x0A,0b11010000);
+			nachtmodus = 0;
+		    }
+		
+		//NEUSCHREIBEN
+		#endif
+		
 		if (fixed == RTC_OFF_PRESYNC) {
 			PORTC ^= (1<<PC0);
 			// Solange kein valides DCF77 Signal blinkt PowerLED (Extern per Draht angeschlossen)
