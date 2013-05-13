@@ -205,7 +205,7 @@ const uint16_t minHalb [11] PROGMEM = {64,64,64,64,0,0,0,0,0,0,0};
 const uint16_t minDreiViertel [11] PROGMEM = {512,512,512,512,512,512,512,512,512,512,512};
 const uint16_t minUm [11] PROGMEM = {0,0,0,0,0,128,128,0,0,0,0};
 
-const uint16_t stdEins [11] PROGMEM = {,16,16,16,16,0,0,0,0,0,0};
+const uint16_t stdEins [11] PROGMEM = {0,16,16,16,16,0,0,0,0,0,0};
 const uint16_t stdZwei [11] PROGMEM = {1,1,1,1,0,0,0,0,0,0,0};
 const uint16_t stdDrei [11] PROGMEM = {0,0,0,0,0,0,0,2,2,2,2};
 const uint16_t stdVier [11] PROGMEM = {2,2,2,2,0,0,0,0,0,0,0};
@@ -478,6 +478,7 @@ void timeToArray(void) {
 		
 		htWriteDisplay(temp);
 	}
+}
 
 #ifndef HW_0_4
 ISR (TIMER0_OVF_vect) { // Wenn der 8 Bit Timer abgelaufen ist, wird nightTimerOverflow um 1 erhöht. 
