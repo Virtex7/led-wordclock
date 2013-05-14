@@ -807,6 +807,7 @@ int main (void) {
 		  if(nightTimerOverflow >= 21300) // Es sind 10 Minuten im Interrupt abgelaufen
 		    {
 			  nightTimerOverflow_10Min++;
+			  nightTimerOverflow = 0;
 		    }
 		  sei(); 
 		  if (nightTimerOverflow_10Min >= nightSyncTime) // Das sollen NightSyncTime * 10 Minuten darstellen
