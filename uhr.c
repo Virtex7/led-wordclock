@@ -802,13 +802,13 @@ int main (void) {
 		
 		#ifndef HW_0_4
 		// Bedinung zum Testen der Nachabschaltung
+		cli();
 		if ((nachtmodus == 1) && (fixed == RTC_OFF_PRESYNC)) {
-		  cli();
 		  if(nightTimerOverflow >= 21300) // Es sind 10 Minuten im Interrupt abgelaufen
 		    {
 			  nightTimerOverflow_10Min++;
 		    }
-		   sei(); 
+		  sei(); 
 		  if (nightTimerOverflow_10Min >= nightSyncTime) // Das sollen NightSyncTime * 10 Minuten darstellen
 			{
 			cli();
