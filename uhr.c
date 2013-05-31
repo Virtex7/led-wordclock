@@ -79,14 +79,14 @@
 #define DEBUG_PIN PB2
 #define DEBUG_PORT PINB
 
-#define DEBUG_TIMER
+// #define DEBUG_TIMER
 #define DEBUG_ERFASSUNG
 // #define DEBUG_DATENWERT
 #define DEBUG_ZEIT
 #define DEBUG_RTC
 // #define DEBUG_RTC_TEST
 // #define RTC_RESET
-//#define RTC_3UHR_TEST
+// #define RTC_3UHR_TEST
 #define DEBUG_RTC_READ
 // #define DEBUG_DISPLAY
 // #define DEBUG_LCD
@@ -133,9 +133,9 @@
  * 
  * 
  * 
-*/
-//#define HW_0_4 
+ */
 
+#define HW_0_4 
 #define POWER_LED PC0
 
 #include "../atmel/lib/0.1.3/global.h"
@@ -237,7 +237,7 @@ uint8_t last_sync_min = 0;
 uint8_t last_sync_std = 0;
 
 void dcfInit(void) {
-	DDRD | (1<<PD3); // PON
+	DDRD | (1<<PD3); // PON wird gesteuert.
 	TCCR1B = (1<<CS12) | (1<<CS10); // Prescaler = 1024
 	GICR = (1<<INT0);   // INT0 ist ab hier ein Interrupt-Pin
 	MCUCR = (1<<ISC00); // INT0 Logic Change Interrupt
@@ -245,20 +245,22 @@ void dcfInit(void) {
 
 inline void dcfOn(void) { //Aktivieren des DCF77 Moduls (PON)
 #ifdef HW_0_4
-cbi(PORTD, PC1);
-delayms(2000);
-#endif
+cbi(PORTC, PC1);
+delayms(1000);
+sbi(PORTD, PD4);
+#else 
 sbi(PORTD, PD3);
-
+#endif
 }
 
 inline void dcfOff(void) { //Deaktivieren des DCF77 Moduls (PON)
 #ifdef HW_0_4
-cbi(PORTD, PC1);
-delayms(2000);
-#endif
+cbi(PORTC, PC1);
+// delayms(1000);
+cbi(PORTD, PD4);
+#else
 cbi(PORTD, PD3);
-
+#endif
 }
 
 void rtcInit(void) {
@@ -503,19 +505,19 @@ void timeToArray(void) {
 	}
 }
 
-#ifndef HW_0_4
-ISR (TIMER0_OVF_vect) { // Wenn der 8 Bit Timer abgelaufen ist, wird nightTimerOverflow um 1 erhöht. 
-	nightTimerOverflow++;
-}
-#endif
-
 #ifdef HW_0_4
-ISR (INT1_vect,ISR_BLOCK) { // Wenn die RTC einen Puls abgibt (1Hz), wird nightTimerOverflow um 1 erhöht. 
+ISR (INT1_vect, ISR_BLOCK) { // Wenn die RTC einen Puls abgibt (1Hz), wird nightTimerOverflow um 1 erhöht. 
+nightTimerOverflow++;
+}
+#endif
+
+#ifndef HW_0_4
+ISR (TIMER0_OVF_vect, ISR_BLOCK) { // Wenn der 8 Bit Timer abgelaufen ist, wird nightTimerOverflow um 1 erhöht. 
 	nightTimerOverflow++;
 }
 #endif
 
-ISR (INT0_vect,ISR_BLOCK) { // Pinchange-Interrupt an INT0 (DCF-Signal IN)
+ISR (INT0_vect, ISR_BLOCK) { // Pinchange-Interrupt an INT0 (DCF-Signal IN)
 // Dieser Interrupt verarbeitet das DCF-Signal, also High- und Lowphasen!!
 
 static uint32_t datenwert=0;
@@ -661,9 +663,7 @@ int main (void) {
 	
 	// Pullup DEBUG-Jumper
 	PORTB |= (1<<PB2);
-	
 	PORTC |= (1<<PC0) | (1<<PC2) | (1<<PC3) | (1<<PC5); // Power LED, leuchtet; CS, RD, WR sind idle HIGH
-	
 	PORTD |= (1<<PD3);
 	
 	#ifdef HW_0_4
@@ -718,7 +718,7 @@ int main (void) {
 		lcd_putstr("DCF77 auf Empfang!");
 		#endif
 		#ifdef DEBUG_RTC
-		uart_tx_strln("DCF77 Empfangsbereit!");
+		uart_tx_strln("DCF77 auf Empfang!");
 		#endif
 		dcfOn();
 		delayms(100);
@@ -775,7 +775,7 @@ int main (void) {
 	
 	while(1) {
 		
-		#ifdef DISPLAY_DIMMEN // Hier wird der Code für das Dimmen des LCDs definiert
+		#ifdef DISPLAY_DIMMEN // Hier wird der Code für das Dimmen der LEDs definiert
 		if (((stundenValid > DIMMEN_START) | (stundenValid < DIMMEN_END)) & (set_dimmen == 0))	{
 			htCommand(0b10100101);
 			set_dimmen = 1;
