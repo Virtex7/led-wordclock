@@ -1,6 +1,6 @@
 /*
  *    Filename: uhr.c
- *     Version: 0.2.4
+ *     Version: 0.2.9
  * Description: Ansteuerung für eine umgangssprachliche Uhr
  *     License: GPLv3 or later
  *     Depends:     global.h, io.h, stdio.h, pgmspace.h, interrupt.h
@@ -24,20 +24,119 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+ #define FIRMWARE_VERSION "0.2.9_Hormersdorf"
 
-#define WORDCLOCK_MIRROR
-#define POWER_LED PC0
+
+
+/*  DEBUG SECTION 
+ * 
+ *  LED_ROT = Anzeige
+ *  LED_GELB = Sync in der Nacht nicht erfolgreich
+ *  LED_GRÜN = DCF-SIGNAL
+ *
+ *  UART-Einstellung: 57600 BAUD, 1 Stoppbits, 8 Bit Frame, no Parity
+ *
+ *
+ *  DEBUG_TIMER:
+ *  Ausgabe des erfassten Timerwertes in ms für den High-Pegel des DCF-Signals (roh) aus.
+ *
+ *  DEBUG_ERFASSUNG:
+ *  gibt die erfassten DCF-Bits aus (60Bit Wort, LSB first)
+ *
+ *  DEBUG_DATENWERT:
+ *  Ausgabe des Teils des erfassten Wertes, in dem die Uhrzeit steht.
+ *  (binär, Reihenfolge wie DCF)
+ *
+ *  DEBUG_ZEIT
+ *  Ausgabe der berechneten Uhrzeit
+ *
+ *  DEBUG_RTC
+ *  gibt den Zeitwert der RTC und den aktuellen DCF-Wert in BCD-Code aus
+ *  beide Werte stehen zum besseren Vergleich untereinander.
+ *
+ *  DEBUG_RTC_TEST
+ *  RTC wird nicht geschrieben sondern nur gelesen, ideal zum Test der RTC-Genauigkeit.
+ *  OBSOLET geworden durch erwieiterte RTC-Funktionalitäten
+ *
+ *  DEBUG_RTC_READ
+ *  UART-Ausgabe beim halbsekündlichen Auslesen der RTC (viel Output!)
+ *
+ *  DEBUG_DISPLAY
+ *
+ *  DEBUG_LCD
+ *  Ausgabe der Uhrzeit in Stunden, Minuten und Sekunden auf einem 2x20 Zeichen LCD
+ *
+ *  RTC_NEU
+ *  Ansteuerung der neuen RTC (DS3231)
+ *  Enthält einen MEMS-Quarz und ist so einfacher als die DS1307 anzuschließen
+ *
+ *  RTC_3UHR_TEST
+ *  Setzt die RTC am Anfang der Main auf kurz vor drei Uhr
+ *
+ *
+ */
+
+#define DEBUG_PIN PB2
+#define DEBUG_PORT PINB
+
+#define DEBUG_TIMER
+#define DEBUG_ERFASSUNG
+// #define DEBUG_DATENWERT
+#define DEBUG_ZEIT
+#define DEBUG_RTC
+// #define DEBUG_RTC_TEST
+// #define RTC_RESET
+//#define RTC_3UHR_TEST
+#define DEBUG_RTC_READ
+// #define DEBUG_DISPLAY
+// #define DEBUG_LCD
 
 /*
- * Sprechende Bezeichner für die Variable fixed
- */
-#define RTC_FIX 0
-#define RTC_FIRST_SYNC 1
-#define RTC_OFF_PRESYNC 2
+ * Feature Section 
+ * 
+ * 
+ *  DISPLAY_SCROLL
+ *  Matrix-ähnliche Lautschrift wenn die Uhr die Anzeige wechselt.
+ *  gehört zum normalen Programm der Uhr.
+ * 
+ * 
+ * 
+ * DISPLAY_DIMMEN
+ * Definiert das Dimmen des Displays zwischen den Uhrzeiten DIMMEN_START und DIMMEN_END
+ * 
+ * WORDCLOCK_MIRROR
+ * Spiegelt die Matrix des Displays ( Je nachdem wie man die Verkabelung anfänt)
+ *  
+ *
+ * nightSyncTime
+ * Definiert in 10 Minuten Schritten wie lange das Display in der Nacht aus ist.
+  
+*/
+//#define DISPLAY_DIMMEN
+#define DIMMEN_START 22
+#define DIMMEN_END 7
 
-//Definiert wie lange in der Nacht auf ein DCF77 Signal gewartet werden soll (Angabe in x * 10 Minuten)
+#define DISPLAY_SCROLL
+
+#define WORDCLOCK_MIRROR
+
 #define nightSyncTime 4
 
+/*
+ * Hardware Selection 
+ * 
+ * 
+ *  HW_0_4
+ * 
+ *   Es wird das neue Hardwareboard 0_4 verwendet 
+ * 
+ * 
+ * 
+ * 
+*/
+//#define HW_0_4 
+
+#define POWER_LED PC0
 
 #include "../atmel/lib/0.1.3/global.h"
 #include "../atmel/lib/0.1.3/io/io.h"
@@ -50,8 +149,13 @@
 #define mega8
 #include "../atmel/lib/0.1.3/io/serial/uart.h"
 
+/*
+ * Sprechende Bezeichner für die Variable fixed
+ */
+#define RTC_FIX 0
+#define RTC_FIRST_SYNC 1
+#define RTC_OFF_PRESYNC 2
 // LCD
-
 #define LCD_SHIFT_PORT PORTC
 #define LCD_SHIFT_DDR DDRC
 #define LCD_SHIFT_DATA_PIN PC5
@@ -101,7 +205,7 @@ const uint16_t minHalb [11] PROGMEM = {64,64,64,64,0,0,0,0,0,0,0};
 const uint16_t minDreiViertel [11] PROGMEM = {512,512,512,512,512,512,512,512,512,512,512};
 const uint16_t minUm [11] PROGMEM = {0,0,0,0,0,128,128,0,0,0,0};
 
-const uint16_t stdEins [11] PROGMEM = {,16,16,16,16,0,0,0,0,0,0};
+const uint16_t stdEins [11] PROGMEM = {0,16,16,16,16,0,0,0,0,0,0};
 const uint16_t stdZwei [11] PROGMEM = {1,1,1,1,0,0,0,0,0,0,0};
 const uint16_t stdDrei [11] PROGMEM = {0,0,0,0,0,0,0,2,2,2,2};
 const uint16_t stdVier [11] PROGMEM = {2,2,2,2,0,0,0,0,0,0,0};
@@ -124,7 +228,7 @@ uint16_t funkuhr [11] = {0,0,0,0,577,577,833,321,257,1,1};
 volatile uint8_t stundenValid = 0, minutenValid = 0, sekundenValid=0;
 volatile uint16_t nightTimerOverflow= 0; // Zähler um die 3 Uhr Nacht Periode zu unterbrechen
 volatile uint8_t nightTimerOverflow_10Min = 0;
-
+volatile uint8_t empfangFehler = 0, fixed = RTC_OFF_PRESYNC;
 uint16_t temp[11];
 uint8_t DisplayOffTimer = 0;
 
@@ -136,96 +240,6 @@ uint8_t RTC_read_error = 0;
 uint8_t last_sync_min = 0;
 uint8_t last_sync_std = 0;
 
-/*  DEBUG SECTION 
- * 
- *  LED_ROT = Anzeige
- *  LED_GELB = Sync in der Nacht nicht erfolgreich
- *  LED_GRÜN = DCF-SIGNAL
- *
- *  UART-Einstellung: 57600 BAUD, 1 Stoppbits, 8 Bit Frame, no Parity
- *
- *
- *  DEBUG_TIMER:
- *  Ausgabe des erfassten Timerwertes in ms für den High-Pegel des DCF-Signals (roh) aus.
- *
- *  DEBUG_ERFASSUNG:
- *  gibt die erfassten DCF-Bits aus (60Bit Wort, LSB first)
- *
- *  DEBUG_DATENWERT:
- *  Ausgabe des Teils des erfassten Wertes, in dem die Uhrzeit steht.
- *  (binär, Reihenfolge wie DCF)
- *
- *  DEBUG_ZEIT
- *  Ausgabe der berechneten Uhrzeit
- *
- *  DEBUG_RTC
- *  gibt den Zeitwert der RTC und den aktuellen DCF-Wert in BCD-Code aus
- *  beide Werte stehen zum besseren Vergleich untereinander.
- *
- *  DEBUG_RTC_TEST
- *  RTC wird nicht geschrieben sondern nur gelesen, ideal zum Test der RTC-Genauigkeit.
- *  OBSOLET geworden durch erwieiterte RTC-Funktionalitäten
- *
- *  DEBUG_RTC_READ
- *  UART-Ausgabe beim halbsekündlichen Auslesen der RTC (viel Output!)
- *
- *  DEBUG_DISPLAY
- *
- *  DEBUG_LCD
- *  Ausgabe der Uhrzeit in Stunden, Minuten und Sekunden auf einem 2x20 Zeichen LCD
- *
- *
- *  RTC_NEU
- *  Ansteuerung der neuen RTC (DS3231)
- *  Enthält einen MEMS-Quarz und ist so einfacher als die DS1307 anzuschließen
- *
- *  RTC_3UHR_TEST
- *  Setzt die RTC am Anfang der Main auf kurz vor drei Uhr
- *
- *
- */
-
-#define DEBUG_PIN PB2
-#define DEBUG_PORT PINB
-
-#define DEBUG_TIMER
-#define DEBUG_ERFASSUNG
-// #define DEBUG_DATENWERT
-#define DEBUG_ZEIT
-#define DEBUG_RTC
-// #define DEBUG_RTC_TEST
-// #define RTC_RESET
-//#define RTC_3UHR_TEST
-#define DEBUG_RTC_READ
-// #define DEBUG_DISPLAY
-// #define DEBUG_LCD
-
-/*
- * Feature Section 
- * 
- * 
- *  DISPLAY_SCROLL
- *  Matrix-ähnliche Lautschrift wenn die Uhr die Anzeige wechselt.
- *  gehört zum normalen Programm der Uhr.
- * 
- * 
- * 
- * DISPLAY_DIMMEN
- * Definiert das Dimmen des Displays zwischen den Uhrzeiten DIMMEN_START und DIMMEN_END
- * 
- * 
- * 
- *  
-*/
-//#define DISPLAY_DIMMEN
-#define DIMMEN_START 22
-#define DIMMEN_END 7
-
-#define DISPLAY_SCROLL
-
-
-
-
 void dcfInit(void) {
 	DDRD | (1<<PD3); // PON
 	TCCR1B = (1<<CS12) | (1<<CS10); // Prescaler = 1024
@@ -234,18 +248,34 @@ void dcfInit(void) {
 }
 
 inline void dcfOn(void) { //Aktivieren des DCF77 Moduls (PON)
+#ifdef HW_0_4
+cbi(PORTD, PC1);
+delayms(2000);
+#endif
 sbi(PORTD, PD3);
+
 }
 
 inline void dcfOff(void) { //Deaktivieren des DCF77 Moduls (PON)
+#ifdef HW_0_4
+cbi(PORTD, PC1);
+delayms(2000);
+#endif
 cbi(PORTD, PD3);
+
 }
 
 void rtcInit(void) {
-	i2c_tx(0b00100100,0xE,0b11010000); // Aktiviere Oszillator
+#ifdef HW_0_4
+	i2c_tx(0b00000000,0xE,0b11010000); // Aktiviere Oszillator
+#endif 
+#ifndef HW_0_4
+	i2c_tx(0b01000000,0xE,0b11010000); // Aktiviere Oszillator
+#endif 
 	delayms(10);
 	i2c_tx(0x00,0x02,0b11010000); // Stelle 24-Stunden-Modus ein
 	delayms(10);
+	
 }
 
 void uart_init(void) {
@@ -254,14 +284,14 @@ void uart_init(void) {
 	UCSRC = (1<<URSEL) | (1<<USBS) | (1<<UCSZ1) | (1<<UCSZ0);
 }
 
-volatile uint8_t empfangFehler = 0, fixed = RTC_OFF_PRESYNC;
 void rtcWrite(uint8_t hr, uint8_t min) {
 	#ifdef DEBUG_RTC_TEST
 	fixed = RTC_FIRST_SYNC;
 	#endif
 	uint8_t i=3;
-	uint8_t min_tx = ((min/10)<<4) | (min%10);
+	uint8_t min_tx = ((min/10)<<4) | (min%10); // Erzeugung von BCD-Code-Notation h/min
 	uint8_t hr_tx =  ((hr/10)<<4) | (hr%10);
+	// while Schleife, damit die RTC bei schlechter Verbindung bist zu 3 mal geschrieben wird.
 	while(i) {
 		if(fixed == RTC_FIRST_SYNC) { // fixed sorgt dafür, dass die RTC nur ein mal geschrieben wird
 		} else {
@@ -345,7 +375,6 @@ void clearTemp(void) {
 		temp[i] = 0;
 	}
 }
-
 void timeToArray(void) {
 	if(minutenValid%5 == 0) { // minuten muss durch 5 Teilbar sein.
 		clearTemp();
@@ -450,12 +479,20 @@ void timeToArray(void) {
 		htWriteDisplay(temp);
 	}
 }
-ISR (TIMER0_OVF_vect) // Wenn der 8 Bit Timer abgelaufen ist, wird nightTimerOverflow um 1 erhöht. 
-{
- nightTimerOverflow++;
-}
 
-ISR(INT0_vect,ISR_BLOCK) { // Pinchange-Interrupt an INT0 (DCF-Signal IN)
+#ifndef HW_0_4
+ISR (TIMER0_OVF_vect) { // Wenn der 8 Bit Timer abgelaufen ist, wird nightTimerOverflow um 1 erhöht. 
+	nightTimerOverflow++;
+}
+#endif
+
+#ifdef HW_0_4
+ISR (INT1_vect,ISR_BLOCK) { // Wenn die RTC einen Puls abgibt (1Hz), wird nightTimerOverflow um 1 erhöht. 
+	nightTimerOverflow++;
+}
+#endif
+
+ISR (INT0_vect,ISR_BLOCK) { // Pinchange-Interrupt an INT0 (DCF-Signal IN)
 // Dieser Interrupt verarbeitet das DCF-Signal, also High- und Lowphasen!!
 
 static uint32_t datenwert=0;
@@ -471,11 +508,11 @@ if (DEBUG_PORT &= (1 << DEBUG_PIN)) { //Test ob Debug Stecker gelöst
 	PORTD ^= (1<<PD7); //LED an PD7 zeigt das DCF77 Signal an
 }
 
-if(PIND & (1<<PD2)) { // gerade ist HIGH
+if (PIND & (1<<PD2)) { // gerade ist HIGH
 	TCCR1B = (1<<CS11) | (1<<CS10); // Prescaler = 64
 	TCNT1 = 156;
 	
-	if(timerwert_alt > 14000) {
+	if (timerwert_alt > 14000) {
 		sync = 1;
 		i=0;
 		datenwert = 0;
@@ -484,12 +521,12 @@ if(PIND & (1<<PD2)) { // gerade ist HIGH
 		uart_tx_newline();
 		#endif
 		
-		if((minutenDcfLast+1 == minutenDcfAktuell) && (stundenDcfLast == stundenDcfAktuell)) {
+		if ((minutenDcfLast+1 == minutenDcfAktuell) && (stundenDcfLast == stundenDcfAktuell)) {
 			// Vergleich und Setzen der Valid-Uhrzeitvariablen
 			timeValid = 1;
 		} else if ((minutenDcfLast == 59) && (minutenDcfAktuell == 0) && (stundenDcfLast +1 == stundenDcfAktuell)) {
 			timeValid = 1;
-		} else if((minutenDcfLast == 59) && (minutenDcfAktuell == 0) && ((stundenDcfLast == 23) && (stundenDcfAktuell == 0))) {
+		} else if ((minutenDcfLast == 59) && (minutenDcfAktuell == 0) && ((stundenDcfLast == 23) && (stundenDcfAktuell == 0))) {
 			timeValid = 1;
 		} else { // ACHTUNG FEHLER!! (oder erster Empfang nach Inbetriebnahme)
 			empfangFehler++;
@@ -497,7 +534,13 @@ if(PIND & (1<<PD2)) { // gerade ist HIGH
 			uart_tx_strln("Fehler bei Zeitübernahme!");
 			#endif
 		}
-		if(timeValid) { // Zeit ist valide: RTC wird gesetzt
+		if ((minutenDcfAktuell > 59) || (stundenDcfAktuell > 23)) { // offensichtlich Schmarrn.
+			timeValid = 0;
+			#ifdef DEBUG_ZEIT
+			uart_tx_strln("Zeit über 23 Uhr und/oder 59 Minuten. WTF??");
+			#endif
+		}
+		if (timeValid) { // Zeit ist valide: RTC wird gesetzt
 			minutenValid = minutenDcfAktuell;
 			stundenValid = stundenDcfAktuell;
 			rtcWrite(stundenValid,minutenValid);
@@ -513,7 +556,7 @@ if(PIND & (1<<PD2)) { // gerade ist HIGH
 		#endif
 	}
 	
-} else { // gerade ist LOW
+} else { // gerade ist LOW ---> Auswertung!
 	TCCR1B = (1<<CS12) | (1<<CS10); // Prescaler = 1024
 	TCNT1 = 10;
 	#ifdef DEBUG_TIMER
@@ -523,8 +566,8 @@ if(PIND & (1<<PD2)) { // gerade ist HIGH
 	uart_tx_str(" ms");
 	uart_tx_newline();
 	#endif
-	if(sync) {
-		if((NULL_LOW < timerwert_alt) && (timerwert_alt < NULL_HIGH)) { // und wir haben eine NULL
+	if (sync) {
+		if ((NULL_LOW < timerwert_alt) && (timerwert_alt < NULL_HIGH)) { // und wir haben eine NULL
 			i++;
 			; // nullen stehen schon da.
 			#ifdef DEBUG_ERFASSUNG
@@ -587,24 +630,32 @@ void delays(uint8_t delay){
 	}
 }
 
-
-
-
 int main (void) {
-	DDRB  |= (1<<PB1);
+ 	DDRB  |= (1<<PB0) | (1<<PB1);
 	DDRC  |= (1<<PC0) | (1<<PC2) | (1<<PC3) | (1<<PC4) | (1<<PC5);
-	DDRD  |= (1<<PD1) | (1<<PD5) | (1<<PD6) | (1<<PD7); //Definieren der drei LEDs und des UART-TX als Output
-	PORTB |= (1<<PB2); // Pullup DEBUG-Jumper
+	// Definieren der drei LEDs und des UART-TX als Output
+	DDRD  |= (1<<PD1) | (1<<PD5) | (1<<PD6) | (1<<PD7);
+	
+	// Pullup DEBUG-Jumper
+	PORTB |= (1<<PB2);
+	
 	PORTC |= (1<<PC0) | (1<<PC2) | (1<<PC3) | (1<<PC5); // Power LED, leuchtet; CS, RD, WR sind idle HIGH
+	
 	PORTD |= (1<<PD3);
+	
+	#ifdef HW_0_4
+	DDRC  |= (1<<PC1); // Output für das DCF Modul
+	PORTC |= (1<<PC1); // DCF Modul wird ausgeschalten (Invertierter PIN)
+	GICR = (1<<INT1);   // INT1 ist ab hier ein Interrupt-Pin
+	MCUCR = (1<<ISC11) | (1<<ISC10); // INT1 Logic Change Interrupt
+	#endif 
 	
 	
 	delayms(100);
 	uart_init();		// Akivierung Kommuniaktion UART 56,8kBaud 8n1
 	dcfInit();		// Pon als Output, Setzen der Timereigenschaften
 	i2c_init();		// Pullup SDA, Initzialisierung I2C
-// 	rtcInit();		// Starte Oszillator der RTC
-	
+
 	uart_tx_strln("DCF-Wordclock!"); //
 	htInit();
 	
@@ -726,6 +777,7 @@ int main (void) {
 			sei(); // Und es seien wieder Interrupts!
 		} 
 		
+		#ifndef HW_0_4
 		// Bedinung zum Testen der Nachabschaltung
 		if ((nachtmodus == 1) && (fixed == RTC_OFF_PRESYNC)) {
 		  
@@ -749,6 +801,23 @@ int main (void) {
 			  
 			}
 		}
+		#endif
+		#ifdef HW_0_4
+		// Bedinung zum Testen der Nachabschaltung
+			if((nightTimerOverflow/600) >= nightSyncTime) // Es sind 10 Minuten im Interrupt abgelaufen
+		    {
+			cli();
+			htDisplOn();
+			nightTimerOverflow = 0;
+			dcfOff();
+			fixed= RTC_FIX;
+			i2c_tx(++SyncNotNacht,0x0A,0b11010000);
+			nachtmodus = 0;
+		    }
+		
+		//NEUSCHREIBEN
+		#endif
+		
 		if (fixed == RTC_OFF_PRESYNC) {
 			PORTC ^= (1<<PC0);
 			// Solange kein valides DCF77 Signal blinkt PowerLED (Extern per Draht angeschlossen)
@@ -818,7 +887,8 @@ int main (void) {
 			
 			#ifdef DEBUG_RTC
 			if ((minutenValid %5 == 0) && (sekundenValid == 05)) {
-				uart_tx_strln("Software-Revision: 0.2.4");
+				uart_tx_strln("Software-Revision:");
+				uart_tx_strln(FIRMWARE_VERSION);
 				uart_tx_str("Anzahl erfolgreicher Syncs: ");
 				uart_tx_dec(Syncnacht);
 				uart_tx_newline();
@@ -846,4 +916,3 @@ int main (void) {
 	}
 	return 0;
 }
-
