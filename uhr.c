@@ -871,6 +871,9 @@ int main (void) {
 			last_sync_min = minutenValid;
 			last_sync_std = stundenValid;
 			
+			i2c_tx(last_sync_min,0xC,0b11010000);
+			i2c_tx(last_sync_std,0xD,0b11010000);
+			
 			// Schreiben des Valid Wertes
 			i2c_tx(0b01011101,0x07,0b11010000);
 			// Anzahl Valide Syncs Nacht
@@ -923,9 +926,9 @@ int main (void) {
 				uart_tx_dec(RTC_read_error);
 				uart_tx_newline();
 				uart_tx_str("Zeit des letzten Syncs: ");
-				uart_tx_dec(last_sync_min);
-				uart_tx_str(":");
 				uart_tx_dec(last_sync_std);
+				uart_tx_str(":");
+				uart_tx_dec(last_sync_min);
 				uart_tx_newline();
 			}
 			#endif
