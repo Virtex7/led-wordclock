@@ -390,6 +390,7 @@ void timeToArray(void) {
 		  break;
 	  case 15:
 		  addArray(minViertel);
+		  stundenValid++;
 		  break;
 	  case 20:
 		  addArray(minVier);
@@ -401,6 +402,7 @@ void timeToArray(void) {
 		  break;
 	  case 30:
 		  addArray(minHalb);
+		  stundenValid++;
 		  break;
 	  case 35:
 		  addArray(minSieben);
@@ -412,6 +414,7 @@ void timeToArray(void) {
 		  break;
 	  case 45:
 		  addArray(minDreiViertel);
+		  stundenValid++;
 		  break;
 	  case 50:
 		  addArray(minZehn);
@@ -853,11 +856,10 @@ int main (void) {
 				// Nachtmodus = 2 ist der Normalzustand, 0 zur aktivierung um 3 Uhr nachts und 1 im Aktiv-Zustand.
 			}
 			
-			// Schreiben des/der VALID - Bitwerte in die RTC
-			
 			//Setzen der Sync Zeit von Valider Zeit
 			last_sync_min = minutenValid;
 			last_sync_std = stundenValid;
+			
 			
 			// Schreibe Synczeit in die RTC (RAM)
 			i2c_tx(last_sync_min,0xC,0b11010000);
