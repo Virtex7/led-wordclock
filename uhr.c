@@ -240,31 +240,18 @@ uint8_t RTC_read_error = 0;
 uint8_t last_sync_min = 0;
 uint8_t last_sync_std = 0;
 
-void dcfInit(void) {
-	DDRD | (1<<PD3); // PON wird gesteuert.
-	TCCR1B = (1<<CS12) | (1<<CS10); // Prescaler = 1024
-	GICR = (1<<INT0);   // INT0 ist ab hier ein Interrupt-Pin
-	MCUCR = (1<<ISC00); // INT0 Logic Change Interrupt
-}
-
-inline void dcfOn(void) { //Aktivieren des DCF77 Moduls (PON)
+// Definiere Anschlüsse des DCF-Moduls
+#define DCF_POWER_DDR	DDRC
+#define DCF_POWER_PORT	PORTC
+#define DCF_POWER_PIN	PC1
+#define DCF_PON_DDR	DDRD
+#define DCF_PON_PORT	PORTD
 #ifdef HW_0_4
-cbi(PORTC, PC1);
-delayms(2000);
-sbi(PORTD, PD4);
-#else 
-sbi(PORTD, PD3);
-#endif
-}
-
-inline void dcfOff(void) { //Deaktivieren des DCF77 Moduls (PON)
-#ifdef HW_0_4
-cbi(PORTC, PC1);
-cbi(PORTD, PD4);
+#define DCF_PON_PIN	PD4
 #else
-cbi(PORTD, PD3);
+#define DCF_PON_PIN	PD3
 #endif
-}
+#include "./dcf.h"
 
 void rtcInit(void) {
 	#ifdef HW_0_4
@@ -334,8 +321,7 @@ void rtcWrite(uint8_t hr, uint8_t min) {
 	}
 }
 
-void rtcRead(void) {
-	uint8_t sek_tmp=0, min_tmp=0, std_tmp=0, i=5;
+void rtcRead(void) { uint8_t sek_tmp=0, min_tmp=0, std_tmp=0, i=5;
 	
 	while(i) {
 		sek_tmp = i2c_rx_DS1307(0x00);
