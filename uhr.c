@@ -379,6 +379,7 @@ void clearTemp(void) {
 void timeToArray(void) {
 	if(minutenValid%5 == 0) { // minuten muss durch 5 Teilbar sein.
   clearTemp();
+  stundenValid++;
   switch (minutenValid) {
 	  case 5:
 		  addArray(minEine);
@@ -390,7 +391,7 @@ void timeToArray(void) {
 		  break;
 	  case 15:
 		  addArray(minViertel);
-		  stundenValid++;
+		  
 		  break;
 	  case 20:
 		  addArray(minVier);
@@ -402,7 +403,6 @@ void timeToArray(void) {
 		  break;
 	  case 30:
 		  addArray(minHalb);
-		  stundenValid++;
 		  break;
 	  case 35:
 		  addArray(minSieben);
@@ -414,7 +414,6 @@ void timeToArray(void) {
 		  break;
 	  case 45:
 		  addArray(minDreiViertel);
-		  stundenValid++;
 		  break;
 	  case 50:
 		  addArray(minZehn);
@@ -426,6 +425,7 @@ void timeToArray(void) {
 		  break;
 	  case 0:
 		  addArray(minUm);
+		  stundenValid--;
 		  break;
   }
   switch (stundenValid) {
@@ -770,7 +770,7 @@ int main (void) {
 		}
 		#endif
 		
-		if ((stundenValid == 3) && (minutenValid == 0)) {
+		if ((stundenValid == 2) && (minutenValid > 50)) {
 			nachtmodus = 0;
 		}
 		
