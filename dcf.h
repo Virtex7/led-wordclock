@@ -42,17 +42,13 @@ void dcfInit(void) {
 	MCUCR = (1<<ISC00); // INT0 Logic Change Interrupt
 }
 
-inline void dcfOn(void) { //Aktivieren des DCF77 Moduls (PON)
+inline void dcfOn(void) { //Aktivieren des DCF77 Moduls (PON->0)
 cbi(DCF_POWER_PORT, DCF_POWER_PIN); // Aktiviere DCF-Strom
 delayms(2000);
 sbi(DCF_PON_PORT, DCF_PON_PIN);
 }
 
-inline void dcfOff(void) { //Deaktivieren des DCF77 Moduls (PON)
-#ifdef HW_0_4
-cbi(PORTC, PC1);
-cbi(PORTD, PD4);
-#else
-cbi(PORTD, PD3);
-#endif
+inline void dcfOff(void) { //Deaktivieren des DCF77 Moduls (PON->1)
+sbi(DCF_POWER_PORT, DCF_POWER_PIN); // Deaktiviere Strom
+cbi(DCF_PON_PORT, DCF_PON_PIN); // aktiviere PON
 }
