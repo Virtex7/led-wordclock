@@ -770,7 +770,7 @@ int main (void) {
 		}
 		#endif
 		
-		if ((stundenValid == 2) && (minutenValid > 50)) {
+		if ((stundenValid == 2) && (minutenValid > 50) && (nachtmodus != 0)) {
 			nachtmodus = 0;
 		}
 		
