@@ -1,6 +1,6 @@
 /*
  *    Filename: uhr.c
- *     Version: 0.2.9
+ *     Version: 0.3.0
  * Description: Ansteuerung für eine umgangssprachliche Uhr
  *     License: GPLv3 or later
  *     Depends:     global.h, io.h, stdio.h, pgmspace.h, interrupt.h
@@ -24,7 +24,7 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
- #define FIRMWARE_VERSION "0.2.9"
+#define FIRMWARE_VERSION "0.3.0"
 
 
 
@@ -110,15 +110,15 @@
  *
  * nightSyncTime
  * Definiert in 10 Minuten Schritten wie lange das Display in der Nacht aus ist.
-  
-*/
+ *  
+ */
 //#define DISPLAY_DIMMEN
 #define DIMMEN_START 22
 #define DIMMEN_END 7
 
 #define DISPLAY_SCROLL
 
-#define WORDCLOCK_MIRROR
+// #define WORDCLOCK_MIRROR
 
 #define nightSyncTime 4
 
@@ -191,32 +191,36 @@ uint8_t ERR = 0; // Variable (global)
 #define EINS_LOW  (uint16_t)156*140
 #define EINS_HIGH (uint16_t)156*230
 
-const uint16_t esIst [11] PROGMEM = {1024,1024,0,1024,1024,1024,0,0,0,0,0};
-const uint16_t kurz [11] PROGMEM = {0,0,0,0,64,64,64,64,0,0,0};
-const uint16_t minVor [11] PROGMEM = {0,0,0,0,0,0,0,512,512,512,0};
-const uint16_t minNach [11] PROGMEM = {256,256,256,256,0,0,0,0,0,0,0};
-const uint16_t minFuenf [11] PROGMEM = {0,0,0,0,0,0,0,1024,1024,1024,1024};
-const uint16_t minZehn [11] PROGMEM = {512,512,512,512,0,0,0,0,0,0,0};
-const uint16_t minViertel [11] PROGMEM = {0,0,0,0,256,256,256,256,256,256,256};
-const uint16_t minHalb [11] PROGMEM = {128,128,128,128,0,0,0,0,0,0,0};
+const uint16_t minEine [11] PROGMEM = {256,256,384,0,0,0,0,0,0,0,0};
+const uint16_t minZwei [11] PROGMEM = {1024,1024,1024,1024,0,0,0,0,0,0,0};
+const uint16_t minVier [11] PROGMEM = {0,0,0,0,512,512,512,512,0,0,0};
+const uint16_t minFuenf [11] PROGMEM = {0,0,0,0,0,0,0,128,128,128,128};
+const uint16_t minSieben [11] PROGMEM = {0,0,0,0,0,1024,1024,1024,1024,1024,1024};
+const uint16_t minAcht [11] PROGMEM = {0,0,0,0,256,256,256,256,0,0,0};
+const uint16_t minZehn [11] PROGMEM = {0,128,128,128,128,0,0,0,0,0,0};
+const uint16_t minElf [11] PROGMEM = {0,0,0,0,0,0,0,0,256,256,256};
 
-const uint16_t stdEin [11] PROGMEM = {64,64,64,0,0,0,0,0,0,0,0};
-const uint16_t stdEins [11] PROGMEM = {64,64,64,64,0,0,0,0,0,0,0};
-const uint16_t stdZwei [11] PROGMEM = {0,0,0,0,0,0,0,64,64,64,64};
-const uint16_t stdDrei [11] PROGMEM = {32,32,32,32,0,0,0,0,0,0,0};
-const uint16_t stdVier [11] PROGMEM = {0,0,0,0,0,0,0,32,32,32,32};
-const uint16_t stdFuenf [11] PROGMEM = {16,16,16,16,0,0,0,0,0,0,0};
-const uint16_t stdSechs [11] PROGMEM = {0,0,0,0,0,0,16,16,16,16,16};
-const uint16_t stdSieben [11] PROGMEM = {8,8,8,8,8,8,0,0,0,0,0};
-const uint16_t stdAcht [11] PROGMEM = {0,0,0,0,0,0,0,8,8,8,8};
-const uint16_t stdNeun [11] PROGMEM = {0,4,4,4,4,0,0,0,0,0,0};
-const uint16_t stdZehn [11] PROGMEM = {0,0,0,0,0,0,0,4,4,4,4};
-const uint16_t stdElf [11] PROGMEM = {0,0,0,0,0,0,0,0,2,2,2};
-const uint16_t stdZwoelf [11] PROGMEM = {2,2,2,2,2,0,0,0,0,0,0};
+const uint16_t minViertel [11] PROGMEM = {0,0,0,0,512,512,512,512,512,512,512};
+const uint16_t minHalb [11] PROGMEM = {64,64,64,64,0,0,0,0,0,0,0};
+const uint16_t minDreiViertel [11] PROGMEM = {512,512,512,512,512,512,512,512,512,512,512};
+const uint16_t minUm [11] PROGMEM = {0,0,0,0,0,128,128,0,0,0,0};
 
-const uint16_t stdVor [11] PROGMEM = {0,0,0,0,128,128,128,0,0,0,0};
-const uint16_t stdNach [11] PROGMEM = {0,0,0,0,0,0,0,128,128,128,128};
+const uint16_t stdEins [11] PROGMEM = {0,16,16,16,16,0,0,0,0,0,0};
+const uint16_t stdZwei [11] PROGMEM = {1,1,1,1,0,0,0,0,0,0,0};
+const uint16_t stdDrei [11] PROGMEM = {0,0,0,0,0,0,0,2,2,2,2};
+const uint16_t stdVier [11] PROGMEM = {2,2,2,2,0,0,0,0,0,0,0};
+const uint16_t stdFuenf [11] PROGMEM = {0,0,0,0,8,8,8,8,0,0,0};
+const uint16_t stdSechs [11] PROGMEM = {0,0,0,0,16,16,16,16,16,0,0};
+const uint16_t stdSieben [11] PROGMEM = {0,32,32,32,32,32,32,0,0,0,0};
+const uint16_t stdAcht [11] PROGMEM = {0,0,0,0,4,4,4,4,0,0,0};
+const uint16_t stdNeun [11] PROGMEM = {0,0,0,0,0,0,32,32,32,32,0};
+const uint16_t stdZehn [11] PROGMEM = {4,4,4,4,0,0,0,0,0,0,0};
+const uint16_t stdElf [11] PROGMEM = {0,0,0,0,0,0,0,0,4,4,4};
+const uint16_t stdZwoelf [11] PROGMEM = {8,8,8,8,8,0,0,0,0,0,0};
+
 const uint16_t uhr [11] PROGMEM = {0,0,0,0,0,0,0,0,1,1,1};
+const uint16_t ziffern [11] PROGMEM = {0,0,0,0,64,64,64,64,64,64,64};
+const uint16_t ziffer [11] PROGMEM = {0,0,0,0,64,64,64,64,64,64,0};
 
 uint16_t Allon [11] = {2047,2047,2047,2047,2047,2047,2047,2047,2047,2047,2047};
 uint16_t funkuhr [11] = {0,0,0,0,577,577,833,321,257,1,1};
@@ -246,7 +250,7 @@ void dcfInit(void) {
 inline void dcfOn(void) { //Aktivieren des DCF77 Moduls (PON)
 #ifdef HW_0_4
 cbi(PORTC, PC1);
-delayms(1000);
+delayms(2000);
 sbi(PORTD, PD4);
 #else 
 sbi(PORTD, PD3);
@@ -256,7 +260,6 @@ sbi(PORTD, PD3);
 inline void dcfOff(void) { //Deaktivieren des DCF77 Moduls (PON)
 #ifdef HW_0_4
 cbi(PORTC, PC1);
-// delayms(1000);
 cbi(PORTD, PD4);
 #else
 cbi(PORTD, PD3);
@@ -264,12 +267,12 @@ cbi(PORTD, PD3);
 }
 
 void rtcInit(void) {
-#ifdef HW_0_4
+	#ifdef HW_0_4
 	i2c_tx(0b00000000,0xE,0b11010000); // Aktiviere Oszillator
-#endif 
-#ifndef HW_0_4
+	#endif 
+	#ifndef HW_0_4
 	i2c_tx(0b01000000,0xE,0b11010000); // Aktiviere Oszillator
-#endif 
+	#endif 
 	delayms(10);
 	i2c_tx(0x00,0x02,0b11010000); // Stelle 24-Stunden-Modus ein
 	delayms(10);
@@ -362,7 +365,6 @@ void rtcRead(void) {
 }
 
 void addArray(const uint16_t *Array) {
-	
 	for(uint8_t i=0; i<11; i++) {
 		temp[i] += pgm_read_word(&(Array[i]));
 	}
@@ -376,132 +378,106 @@ void clearTemp(void) {
 
 void timeToArray(void) {
 	if(minutenValid%5 == 0) { // minuten muss durch 5 Teilbar sein.
-		clearTemp();
-		addArray(esIst); // Grundsätzlich soll "Es ist" angezeigt werden
-		switch (minutenValid) {
-			case 5:
-				addArray(minFuenf);
-				addArray(minNach);
-				break;
-			case 10:
-				addArray(minZehn);
-				addArray(stdNach);
-				break;
-			case 15:
-				addArray(minViertel);
-				addArray(stdNach);
-				break;
-			case 20:
-				addArray(minZehn);
-				addArray(minVor);
-				addArray(minHalb);
-				stundenValid++;
-				break;
-			case 25:
-				addArray(minFuenf);
-				addArray(minVor);
-				addArray(minHalb);
-				stundenValid++;
-				break;
-			case 30:
-				addArray(minHalb);
-				stundenValid++;
-				break;
-			case 35:
-				addArray(minFuenf);
-				addArray(minNach);
-				addArray(minHalb);
-				stundenValid++;
-				break;
-			case 40:
-				addArray(minZehn);
-				addArray(minNach);
-				addArray(minHalb);
-				stundenValid++;
-				break;
-			case 45:
-				addArray(minViertel);
-				addArray(stdVor);
-				stundenValid++;
-				break;
-			case 50:
-				addArray(minZehn);
-				addArray(minVor);
-				stundenValid++;
-				break;
-			case 55:
-				addArray(minFuenf);
-				addArray(minVor);
-				stundenValid++;
-				break;
-			case 0:
-				addArray(uhr);
-				break;
-		}
-		switch (stundenValid) {
-			case 1:
-			case 13:
-				if (minutenValid != 0)
-				{
-					addArray(stdEins);
-				}
-				else
-				{
-					addArray(stdEin);
-				}
-				break;
-			case 2:
-			case 14:
-				addArray(stdZwei);
-				break;
-			case 3:
-			case 15:
-				addArray(stdDrei);
-				break;
-			case 4:
-			case 16:
-				addArray(stdVier);
-				break;
-			case 5:
-			case 17:
-				addArray(stdFuenf);
-				break;
-			case 6:
-			case 18:
-				addArray(stdSechs);
-				break;
-			case 7:
-			case 19:
-				addArray(stdSieben);
-				break;
-			case 8:
-			case 20:
-				addArray(stdAcht);
-				break;
-			case 9:
-			case 21:
-				addArray(stdNeun);
-				break;
-			case 10:
-			case 22:
-				addArray(stdZehn);
-				break;
-			case 11:
-			case 23:
-				addArray(stdElf);
-				break;
-			case 24:
-			case 12:
-			case 0:
-				addArray(stdZwoelf);
-				break;
-		}
-		if ((minutenValid == 0) || (minutenValid == 5) || (minutenValid == 10) || (minutenValid == 15)) {
-		} else {
-			stundenValid--; // setze stundenValid wieder auf richtigen Wert
-		}
-		
-		htWriteDisplay(temp);
+  clearTemp();
+  switch (minutenValid) {
+	  case 5:
+		  addArray(minEine);
+		  addArray(ziffer);
+		  break;
+	  case 10:
+		  addArray(minZwei);
+		  addArray(ziffern);
+		  break;
+	  case 15:
+		  addArray(minViertel);
+		  break;
+	  case 20:
+		  addArray(minVier);
+		  addArray(ziffern);
+		  break;
+	  case 25:
+		  addArray(minFuenf);
+		  addArray(ziffern);
+		  break;
+	  case 30:
+		  addArray(minHalb);
+		  break;
+	  case 35:
+		  addArray(minSieben);
+		  addArray(ziffern);
+		  break;
+	  case 40:
+		  addArray(minAcht);
+		  addArray(ziffern);
+		  break;
+	  case 45:
+		  addArray(minDreiViertel);
+		  break;
+	  case 50:
+		  addArray(minZehn);
+		  addArray(ziffern);
+		  break;
+	  case 55:
+		  addArray(minElf);
+		  addArray(ziffern);
+		  break;
+	  case 0:
+		  addArray(minUm);
+		  break;
+  }
+  switch (stundenValid) {
+	  case 1:
+	  case 13:
+		  addArray(stdEins);
+		  break;
+	  case 2:
+	  case 14:
+		  addArray(stdZwei);
+		  break;
+	  case 3:
+	  case 15:
+		  addArray(stdDrei);
+		  break;
+	  case 4:
+	  case 16:
+		  addArray(stdVier);
+		  break;
+	  case 5:
+	  case 17:
+		  addArray(stdFuenf);
+		  break;
+	  case 6:
+	  case 18:
+		  addArray(stdSechs);
+		  break;
+	  case 7:
+	  case 19:
+		  addArray(stdSieben);
+		  break;
+	  case 8:
+	  case 20:
+		  addArray(stdAcht);
+		  break;
+	  case 9:
+	  case 21:
+		  addArray(stdNeun);
+		  break;
+	  case 10:
+	  case 22:
+		  addArray(stdZehn);
+		  break;
+	  case 11:
+	  case 23:
+		  addArray(stdElf);
+		  break;
+	  case 24:
+	  case 12:
+	  case 0:
+		  addArray(stdZwoelf);
+		  break;
+  }
+  
+  htWriteDisplay(temp);
 	}
 }
 
@@ -513,7 +489,7 @@ nightTimerOverflow++;
 
 #ifndef HW_0_4
 ISR (TIMER0_OVF_vect, ISR_BLOCK) { // Wenn der 8 Bit Timer abgelaufen ist, wird nightTimerOverflow um 1 erhöht. 
-	nightTimerOverflow++;
+nightTimerOverflow++;
 }
 #endif
 
@@ -656,7 +632,7 @@ void delays(uint8_t delay){
 }
 
 int main (void) {
- 	DDRB  |= (1<<PB0) | (1<<PB1);
+	DDRB  |= (1<<PB0) | (1<<PB1);
 	DDRC  |= (1<<PC0) | (1<<PC2) | (1<<PC3) | (1<<PC4) | (1<<PC5);
 	// Definieren der drei LEDs und des UART-TX als Output
 	DDRD  |= (1<<PD1) | (1<<PD5) | (1<<PD6) | (1<<PD7);
@@ -678,7 +654,7 @@ int main (void) {
 	uart_init();		// Akivierung Kommuniaktion UART 56,8kBaud 8n1
 	dcfInit();		// Pon als Output, Setzen der Timereigenschaften
 	i2c_init();		// Pullup SDA, Initzialisierung I2C
-
+	
 	uart_tx_strln("DCF-Wordclock!"); //
 	htInit();
 	
@@ -773,6 +749,11 @@ int main (void) {
 	uart_tx_strln("Willkommen in der Hauptschleife");
 	#endif
 	
+	#ifdef DEBUG_DISPLAY
+	htWriteDisplay(Allon);
+	while(1);
+	#endif
+	
 	while(1) {
 		
 		#ifdef DISPLAY_DIMMEN // Hier wird der Code für das Dimmen der LEDs definiert
@@ -786,6 +767,10 @@ int main (void) {
 		}
 		#endif
 		
+		if ((stundenValid == 3) && (minutenValid == 0)) {
+			nachtmodus = 0;
+		}
+		
 		//Es ist drei Uhr Nachts, Uhr läuft auf RTC (fixed == RTC_FIX ) und der Nachtmodus ist noch nicht aktiv
 		if ((stundenValid == 3) && (fixed == RTC_FIX) && (nachtmodus == 0)) {
 			//Hier werden die Lesefehler in die RTC geschrieben 
@@ -795,60 +780,62 @@ int main (void) {
 			fixed = RTC_OFF_PRESYNC; 
 			nachtmodus = 1;
 			dcfOn();
+			#ifndef HW_0_4
 			TCCR0 = (1<<CS02) | (1<<CS00); //Starten des Timers für den Interrupt
 			TIMSK |= (1<<TOIE0);
+			#endif
 			sei(); // Und es seien wieder Interrupts!
 		} 
 		
 		#ifndef HW_0_4
 		// Bedinung zum Testen der Nachabschaltung
-		cli();
+// 		cli();
 		if ((nachtmodus == 1) && (fixed == RTC_OFF_PRESYNC)) {
-		  if(nightTimerOverflow >= 21300) // Es sind 10 Minuten im Interrupt abgelaufen
+			if(nightTimerOverflow >= 21300) // Es sind 10 Minuten im Interrupt abgelaufen
 		    {
-			  nightTimerOverflow_10Min++;
-			  nightTimerOverflow = 0;
+			    nightTimerOverflow_10Min++;
+			    nightTimerOverflow = 0;
 		    }
-		  sei(); 
-		  if (nightTimerOverflow_10Min >= nightSyncTime) // Das sollen NightSyncTime * 10 Minuten darstellen
+		    sei(); 
+		    if (nightTimerOverflow_10Min >= nightSyncTime) // Das sollen NightSyncTime * 10 Minuten darstellen
 			{
-			cli();
-			TIMSK |= (0<<TOIE0);
-			TCCR0 = (0<<CS02) | (0<<CS00);
-			htDisplOn();
-			nightTimerOverflow = 0;
-			nightTimerOverflow_10Min = 0;
-			dcfOff();
-			fixed= RTC_FIX;
-			i2c_tx(++SyncNotNacht,0x0A,0b11010000);
-			nachtmodus = 0;
-			  
+				cli();
+				TIMSK &= ~(1<<TOIE0);
+				TCCR0 &= ~((1<<CS02) | (1<<CS00));
+				htDisplOn();
+				nightTimerOverflow = 0;
+				nightTimerOverflow_10Min = 0;
+				dcfOff();
+				fixed= RTC_FIX;
+				i2c_tx(++SyncNotNacht,0x0A,0b11010000);
+				nachtmodus = 0;
+				
 			}
 		}
 		#endif
 		#ifdef HW_0_4
 		// Bedinung zum Testen der Nachabschaltung
-			if((nightTimerOverflow/600) >= nightSyncTime) // Es sind 10 Minuten im Interrupt abgelaufen
+		if((nightTimerOverflow/600) >= nightSyncTime) // Es sind 10 Minuten im Interrupt abgelaufen
 		    {
-			cli();
-			htDisplOn();
-			nightTimerOverflow = 0;
-			dcfOff();
-			fixed= RTC_FIX;
-			i2c_tx(++SyncNotNacht,0x0A,0b11010000);
-			nachtmodus = 0;
+			    cli();
+			    htDisplOn();
+			    nightTimerOverflow = 0;
+			    dcfOff();
+			    fixed= RTC_FIX;
+			    i2c_tx(++SyncNotNacht,0x0A,0b11010000);
+			    nachtmodus = 0;
 		    }
-		
-		//NEUSCHREIBEN
-		#endif
-		
-		if (fixed == RTC_OFF_PRESYNC) {
-			PORTC ^= (1<<PC0);
-			// Solange kein valides DCF77 Signal blinkt PowerLED (Extern per Draht angeschlossen)
-		}
-		
-		if (fixed == RTC_FIRST_SYNC) { // Darf nur nach einem erfolgreichen DCF-Sync durchlaufen
-			// maximal ein mal am Tag, Nach dem Nachtmodus oder beim ersten anschalten.
+		    
+		    //NEUSCHREIBEN
+		    #endif
+		    
+		    if (fixed == RTC_OFF_PRESYNC) {
+			    PORTC ^= (1<<PC0);
+			    // Solange kein valides DCF77 Signal blinkt PowerLED (Extern per Draht angeschlossen)
+		    }
+		    
+		    if (fixed == RTC_FIRST_SYNC) { // Darf nur nach einem erfolgreichen DCF-Sync durchlaufen
+			// maximal ein mal am Tag, Nach dem Nachtmodus oder beim ersten nschalten.
 			
 			cli(); //Deaktivieren der Interrupts
 			#ifdef DEBUG_RTC
@@ -858,11 +845,12 @@ int main (void) {
 			
 			cbi(PORTC,PC0); // Signal empfangen, PowerLED aus TODO : Diese Zeile steht in Wiedersprich zur Zeile 799 (sbi(PORTC, PC0); //PowerLED an - RTC Modus erreicht)
 			
-			dcfOff(); //Deaktivieren des DCF Moduls nach erfolgreichem Sync
+			dcfOff(); // Deaktivieren des DCF Moduls nach erfolgreichem Sync
 			
 			if (nachtmodus == 1) {
 				Syncnacht++;
-				nachtmodus = 0;
+				nachtmodus = 2;
+				// Nachtmodus = 2 ist der Normalzustand, 0 zur aktivierung um 3 Uhr nachts und 1 im Aktiv-Zustand.
 			}
 			
 			// Schreiben des/der VALID - Bitwerte in die RTC
@@ -870,6 +858,10 @@ int main (void) {
 			//Setzen der Sync Zeit von Valider Zeit
 			last_sync_min = minutenValid;
 			last_sync_std = stundenValid;
+			
+			// Schreibe Synczeit in die RTC (RAM)
+			i2c_tx(last_sync_min,0xC,0b11010000);
+			i2c_tx(last_sync_std,0xD,0b11010000);
 			
 			// Schreiben des Valid Wertes
 			i2c_tx(0b01011101,0x07,0b11010000);
@@ -889,9 +881,9 @@ int main (void) {
 			
 			timeToArray(); // momentane Zeit muss direkt in das HT-Display geschrieben werden!
 			htDisplOn();   // Aktivieren der Clockgeneratoren für die LEDs des HT1632 Controllers
-		}
-		
-		if (fixed == RTC_FIX) { // Vermeidung der Überschneidung mit dem Interrupt
+	}
+	
+	if (fixed == RTC_FIX) { // Vermeidung der Überschneidung mit dem Interrupt
 
 			rtcRead();
 			
@@ -923,9 +915,9 @@ int main (void) {
 				uart_tx_dec(RTC_read_error);
 				uart_tx_newline();
 				uart_tx_str("Zeit des letzten Syncs: ");
-				uart_tx_dec(last_sync_min);
-				uart_tx_str(":");
 				uart_tx_dec(last_sync_std);
+				uart_tx_str(":");
+				uart_tx_dec(last_sync_min);
 				uart_tx_newline();
 			}
 			#endif
@@ -933,10 +925,10 @@ int main (void) {
 			timeToArray(); // wird nur ausgeführt, wenn die Uhr einen sicheren, kalibrierten Zeitgeber hat. (RTC fixed)
 			
 			#ifdef DEBUG_LCD
-			time2LCD();
-			#endif
-		}
-		delayms(490);
+		    time2LCD();
+		    #endif
 	}
-	return 0;
+	delayms(490);
+}
+return 0;
 }
