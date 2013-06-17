@@ -332,9 +332,9 @@ ISR (INT1_vect, ISR_BLOCK) {
 		sekundenValid = 0;
 	}
 	
-	if ((stundenValid == 2) && (minutenValid > 45)) {
+	if ((stundenValid == 3) && (minutenValid >= 0)) {
 		if(status == DREIUHR_PRE_DCF_SYNC) {
-			min_increase++;
+			min_increase = minutenValid;
 		} else {
 			status = DREIUHR_PRE_DCF_SYNC;
 		}
