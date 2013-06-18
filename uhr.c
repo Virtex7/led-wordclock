@@ -1,6 +1,6 @@
 /*
  *    Filename: uhr.c
- *     Version: 0.3.7
+ *     Version: 0.3.8
  * Description: Ansteuerung für eine umgangssprachliche Uhr
  *     License: GPLv3 or later
  *     Depends: defines.h
@@ -33,8 +33,8 @@
 #include "./defines.h"
 
 // builddate und Soft-Version hier lassen.
-#define SOFT_VERSION "0.3.7"
-#define BUILDDATE "16.06.2013"
+#define SOFT_VERSION "0.3.8"
+#define BUILDDATE "19.06.2013"
 
 
 int main(void){
