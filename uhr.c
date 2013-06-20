@@ -178,20 +178,27 @@ int main(void){
 		}
 		if (status == DREIUHR_PRE_DCF_SYNC) {
 			dcfOn();
+			htDisplOff();
 			delayms(100);
+			sbi(GICR, INT0); // INT0 Interrupt aktivert (DCF Empfang)
 			status = DREIUHR_DCF_SYNC;
 		}
 		
 		if (status == DREIUHR_DCF_SYNC) {
-			if (min_increase >40) {
-				min_increase = 0;
-				status = DREIUHR_POST_DCF_SYNC;
+			if (sekundenValid == 0) {
+				rtcRead();
 			}
+// 			if (min_increase >40) {
+// 				min_increase = 0;
+// 				status = DREIUHR_POST_DCF_SYNC;
+// 			}
 		}
 		
 		if (status == DREIUHR_POST_DCF_SYNC) {
 			//Wenn er hierhin springt hat er in der Nacht kein Zeitsignal erhalten 
 			debug_sync_nacht_error++;
+			status = RTC_VALID;
+			htDisplOn();
 		}
 	}
 	return 0;
@@ -332,14 +339,21 @@ ISR (INT1_vect, ISR_BLOCK) {
 		sekundenValid = 0;
 	}
 	
-	if ((stundenValid == 3) && (minutenValid >= 0)) {
-		if(status == DREIUHR_PRE_DCF_SYNC) {
-			min_increase = minutenValid;
-		} else {
+	// Syncnacht aktivieren!
+	if ((stundenValid == 3) && (minutenValid == 0) && status == RTC_VALID) {
+// 		if(status == DREIUHR_PRE_DCF_SYNC) {
+// 			min_increase = minutenValid;
+// 		} else {
 			status = DREIUHR_PRE_DCF_SYNC;
-		}
+// 		}
 	}
 	
+	// Uhr hat es nicht geschafft., zu syncen.
+	if ((stundenValid == 4) && (minutenValid == 0) && DREIUHR_DCF_SYNC) {
+		status = DREIUHR_POST_DCF_SYNC;
+	}
+	
+	// Normalbetrieb...
 	if (status == RTC_VALID) {
 		// RTC-Auslesung und evtl. aktualisierung des Displays
 		status = WRITE_DISP;
