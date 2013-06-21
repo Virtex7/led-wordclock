@@ -57,6 +57,7 @@
 #define DEBUG_ZEITAUSGABE
 #define DEBUG_RTC
 // #define RTC_RESET
-// #define RTC_3UHR_TEST
+// #define RTC_SET_CLOCK
+// #define RTC_NO_DCF
 #define DEBUG_RTC_READ
 // #define DEBUG_DISPLAY

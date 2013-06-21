@@ -1,7 +1,7 @@
 
 
-//RTC_SET_CLOCK
-//Benötigt zwei defines (RTC_SET_MIN, RTC_SET_STD)
+// RTC_SET_CLOCK
+// Benötigt zwei defines (RTC_SET_MIN, RTC_SET_STD)
 #define RTC_SET_MIN 59
 #define RTC_SET_STD 2
 

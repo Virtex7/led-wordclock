@@ -1,6 +1,6 @@
 /*
  *    Filename: uhr.c
- *     Version: 0.3.8
+ *     Version: siehe DEFINE
  * Description: Ansteuerung für eine umgangssprachliche Uhr
  *     License: GPLv3 or later
  *     Depends: defines.h
@@ -33,8 +33,8 @@
 #include "./defines.h"
 
 // builddate und Soft-Version hier lassen.
-#define SOFT_VERSION "0.3.8"
-#define BUILDDATE "19.06.2013"
+#define SOFT_VERSION "0.3.9"
+#define BUILDDATE "21.06.2013"
 
 
 int main(void){
@@ -43,15 +43,23 @@ int main(void){
 		
 		if (status == INIT) {
 			init(); //Je nach Hardware Rev. unterschiedliche Init --> siehe HW_x_x.h
+			//Nächster Ablauf 
+			status = RTC_CHECK_VALID;
+			
 			#ifdef RTC_SET_CLOCK
+			uartTxStrln("setze RTC auf 2:59 Uhr");
 			rtcWrite(RTC_SET_STD,RTC_SET_MIN);
 			#endif
+			
+			#ifdef RTC_NO_DCF
+			rtcWrite(3,59);
+			uartTxStrln("setze RTC auf 3:59 Uhr");
+			#endif
+			
 			#ifdef RTC_RESET
 			uartTxStrln("setze RTC zurück...");
 			i2c_tx(0b00000000,0x07,0b11010000);
 			#endif
-			//Nächster Ablauf 
-			status = RTC_CHECK_VALID;
 		}
 		
 		if (status == RTC_CHECK_VALID) {
@@ -120,7 +128,14 @@ int main(void){
 		}
 		
 		if (status == RTC_VALID) {
-			// absichtlich leer!
+			#ifdef RTC_NO_DCF
+			static uint8_t einmal = 0;
+			if (einmal == 0) {
+				uartTxStrln("setze Zeit auf 3:59 Uhr");
+				status = DREIUHR_PRE_DCF_SYNC;
+				einmal = 1;
+			}
+			#endif
 		}
 		
 		if (status == WRITE_DISP) {
@@ -150,6 +165,9 @@ int main(void){
 			if ((minutenValid %5 == 0) && (sekundenValid == 05)) {
 				uart_tx_str("Software-Revision: ");
 				uart_tx_strln(SOFT_VERSION);
+				
+				//TODO: Fehlervariablen ausgeben!
+// 				uartTxStrln("letzte Fehler bei Synchro, usw.");
 			}
 			#endif
 			
@@ -170,12 +188,14 @@ int main(void){
 			// zurück zu RTC_VALID, damit der Interrupt1 wieder was bringt.
 			status = RTC_VALID;
 			
+			// lege Atmel bis zum nächsten Interrupt schlafen
 			set_sleep_mode(SLEEP_MODE_IDLE);
 			sleep_enable();
 			sei();
 			sleep_cpu();
 			sleep_disable();
 		}
+		
 		if (status == DREIUHR_PRE_DCF_SYNC) {
 			dcfOn();
 			htDisplOff();
@@ -187,6 +207,15 @@ int main(void){
 		if (status == DREIUHR_DCF_SYNC) {
 			if (sekundenValid == 0) {
 				rtcRead();
+				#ifdef DEBUG_ZEITAUSGABE
+				uartTxDec2(stundenValid);
+				uartTxStr(":");
+				uartTxDec2(minutenValid);
+				uartTxStr(":");
+				uartTxDec2(sekundenValid);
+				uartTxStrln(" Uhr");
+				delayms(1000);
+				#endif
 			}
 // 			if (min_increase >40) {
 // 				min_increase = 0;
@@ -195,10 +224,11 @@ int main(void){
 		}
 		
 		if (status == DREIUHR_POST_DCF_SYNC) {
-			//Wenn er hierhin springt hat er in der Nacht kein Zeitsignal erhalten 
+			// Wenn er hierhin springt hat er in der Nacht kein Zeitsignal erhalten 
 			debug_sync_nacht_error++;
-			status = RTC_VALID;
-			htDisplOn();
+			cbi(GICR, INT0); // INT0 Interrupt deaktivert
+			dcfOff(); // deaktivere DCF-Modul
+			status = PRE_RTC_VALID;
 		}
 	}
 	return 0;
@@ -340,7 +370,7 @@ ISR (INT1_vect, ISR_BLOCK) {
 	}
 	
 	// Syncnacht aktivieren!
-	if ((stundenValid == 3) && (minutenValid == 0) && status == RTC_VALID) {
+	if ((stundenValid == 3) && (minutenValid == 0) && (status == RTC_VALID)) {
 // 		if(status == DREIUHR_PRE_DCF_SYNC) {
 // 			min_increase = minutenValid;
 // 		} else {
@@ -348,8 +378,8 @@ ISR (INT1_vect, ISR_BLOCK) {
 // 		}
 	}
 	
-	// Uhr hat es nicht geschafft., zu syncen.
-	if ((stundenValid == 4) && (minutenValid == 0) && DREIUHR_DCF_SYNC) {
+	// Uhr hat es nicht geschafft zu syncen.
+	if ((stundenValid == 4) && (minutenValid == 0) && (status == DREIUHR_DCF_SYNC)) {
 		status = DREIUHR_POST_DCF_SYNC;
 	}
 	
