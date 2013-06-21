@@ -1,0 +1,10 @@
+Fuses für den ATmega8 in der Wordclock so setzen:
+
+hfuse: 0xC9
+lfuse: 0x9F
+
+oder mit avrdude diese Zeile ausführen:
+
+avrdude -C /etc/avrdude.conf -p m8 -P usb -c avrispmkII  -u -U hfuse:w:0xC9:m -U lfuse:w:0x9F:m
+
+die Zeile geht von einem AVR-ISP MK2 aus.
