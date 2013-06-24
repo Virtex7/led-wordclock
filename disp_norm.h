@@ -154,7 +154,6 @@ void timeToArray(void) {
 		} else {
 			stundenValid--; // setze stundenValid wieder auf richtigen Wert
 		}
-		
 		htWriteDisplay(temp);
 	}
 }

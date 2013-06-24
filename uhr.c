@@ -104,6 +104,10 @@ int main(void){
 			MCUCR |= (1<<ISC00); // INT0 Pinchange Interrupt aktiv
 			
 			// Für 10 Sekunden wird Funkuhr angezeigt
+			#ifdef DEBUG_DISPLAY
+			htWriteDisplay(Allon);
+			delayms(10000);
+			#endif
 			htWriteDisplay(funkuhr);
 			delayms(10000);
 			htDisplOff();
