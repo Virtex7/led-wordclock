@@ -287,6 +287,13 @@ if (PIND & (1<<PD2)) { // gerade ist HIGH
 			uart_tx_strln("Zeit über 23 Uhr und/oder 59 Minuten. WTF??");
 			#endif
 		}
+		if (status > 5)//Hier wird überprüft ob die empfangene Uhrzeit nicht von der hinterlegten Uhrzeit abweicht. Die erste Zeile überprüft ob wir nicht im Anfangssync sind
+		{
+			//Achtung ! Dieser Code funktioniert nur im Zeitfenster um 3 Uhr herum
+			if ((stundenDcfAktuell - stundenValid) > 2){
+				timeValid = 0;
+			}
+		}
 		if (timeValid) { // Zeit ist valide: RTC wird gesetzt
 			minutenValid = minutenDcfAktuell;
 			stundenValid = stundenDcfAktuell;
