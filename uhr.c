@@ -378,6 +378,25 @@ ISR (INT1_vect, ISR_BLOCK) {
 	
 	if (sekundenValid == 60) {
 		sekundenValid = 0;
+		#ifdef MINUTEN_PHIL
+		// Behandlung der Minuten_LEDs
+		if (RTC_VALID) {
+			if (minutenValid %5 == 0) { // alle LEDs aus
+				cbi(PORTB, PB0);
+				cbi(PORTB, PB1);
+				cbi(PORTB, PB5);
+				cbi(PORTB, PB6);
+			} else if (minutenValid %5 == 1) { // LED 1 an
+				sbi(PORTB, PB0);
+			} else if (minutenValid %5 == 2) { // LED 2 an
+				sbi(PORTB, PB1);
+			} else if (minutenValid %5 == 3) { // LED 3 an
+				sbi(PORTB, PB5);
+			} else if (minutenValid %5 == 4) { // LED 4 an
+				sbi(PORTB, PB6);
+			}
+		}
+		#endif
 	}
 	
 	// Syncnacht aktivieren!
@@ -400,6 +419,3 @@ ISR (INT1_vect, ISR_BLOCK) {
 		status = WRITE_DISP;
 	}
 }
-
-
-

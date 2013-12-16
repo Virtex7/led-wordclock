@@ -1,4 +1,4 @@
-
+// Definitionen für die Wordclock - von User zu setzen!
 
 // RTC_SET_CLOCK
 // Benötigt zwei defines (RTC_SET_MIN, RTC_SET_STD)
@@ -15,14 +15,14 @@
 
 
 /* Erklärungen zu den Einstellungen:
- * 
+ *
  * DISPLAY_SCROLL
  * Matrix-ähnliche Lautschrift wenn die Uhr die Anzeige wechselt.
  * Dies gehört zum normalen Programm der Uhr.
- * 
+ *
  * DISPLAY_DIMMEN
  * Definiert das Dimmen des Displays zwischen den Uhrzeiten DIMMEN_START und DIMMEN_END
- * 
+ *
  * WORDCLOCK_MIRROR
  * Spiegelt die Matrix des Displays ( Je nachdem wie man die Verkabelung anfänt)
  *
@@ -33,7 +33,7 @@
 
 // Einstellungen für Funktionalität und Verhalten:
 #define HW_0_4
-#define DISP_NORM
+#define DISP_FRANKEN
 #define POWER_LED PC0
 
 // #define DISPLAY_DIMMEN
@@ -84,7 +84,10 @@ void clearTemp(void) {
 #include "./HW_0_4.h"
 #define HW_VERSION "0_4"
 #endif
-#ifdef DISP_HORM 
+#ifdef DISP_FRANKEN
+#include "./disp_franken.h"
+#endif
+#ifdef DISP_HORM
 #include "./disp_horm.h"
 #define DISP "HORM"
 #endif

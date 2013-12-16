@@ -42,7 +42,7 @@
  *  genaue Anzeige der aktuellen Uhrzeit ist gewährleistet
  *
  *  DEBUG_DISPLAY
- *  Alle LEDs des Displays sollten jetzt leuchten, keine Uhr-Funktionen
+ *  Alle LEDs des Displays sollten jetzt leuchten, danach Uhr-Funktionen
  *  Wichtig, um Lötfehler ausschließen zu können
  *
  */
@@ -60,4 +60,4 @@
 // #define RTC_SET_CLOCK
 // #define RTC_NO_DCF
 #define DEBUG_RTC_READ
-// #define DEBUG_DISPLAY
+#define DEBUG_DISPLAY

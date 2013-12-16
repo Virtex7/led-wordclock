@@ -53,8 +53,9 @@ void uart_init(void) {
 
 void init(void) {
 	
-	// Minuten_1 und Minuten_2 als Output definieren 
-	DDRB  |= (1<<PB0) | (1<<PB1);
+	// Minuten-LEDs als Output definieren 
+	// Die LEDs gehen nacheinander an und bei minuten_valid%5 = 0 aus.
+	DDRB  |= (1<<PB0) | (1<<PB1) | (1<<PB5) | (1<<PB6);
 	// PowerLED, HTKommunikation (CS, RD, WR, Data) als Output definieren
 	DDRC  |= (1<<PC0) | (1<<PC2) | (1<<PC3) | (1<<PC4) | (1<<PC5);
 	// Definieren der drei LEDs als Output
