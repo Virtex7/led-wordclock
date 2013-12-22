@@ -24,7 +24,7 @@
  *
  *
  * Hinweis zur aktuellen Codeversion > 0.3.1
- * 
+ *
  * Dieser Quellcode macht sich viele Funktionalität der RTC zu Nutze. Der
  * Atmel wird hierbei hauptsächlich schlafen, und nur jede Minute kurz geweckt.
  */
@@ -143,6 +143,8 @@ int main(void){
 		}
 		
 		if (status == WRITE_DISP) {
+			// Teil 1: alte Buchstaben "fallen" herunter...
+
 			#ifdef DISPLAY_DIMMEN // Hier wird der Code für das Dimmen der LEDs definiert
 			if (((stundenValid > DIMMEN_START) | (stundenValid < DIMMEN_END)) & (set_dimmen == 0))	{
 				htCommand(0b10100101);
@@ -152,7 +154,7 @@ int main(void){
 				htCommand(0b10111101);
 				set_dimmen = 0;
 			}
-			#endif		
+			#endif
 			#ifdef DISPLAY_SCROLL
 			if ((sekundenValid == 59) && ((minutenValid) % 5 == 4)) {
 				for (uint8_t shift = 0;shift<11;shift++) { // Matrix-like scrollen
@@ -170,16 +172,38 @@ int main(void){
 				uart_tx_str("Software-Revision: ");
 				uart_tx_strln(SOFT_VERSION);
 				
-				//TODO: Fehlervariablen ausgeben!
-// 				uartTxStrln("letzte Fehler bei Synchro, usw.");
+				// TODO: Fehlervariablen ausgeben!
+ 				// uartTxStrln("letzte Fehler bei Synchro, usw.");
 			}
 			#endif
 			
+			// Teil 2: neue Zeit wird aus der RTC gelesen
 			if (sekundenValid <=2) {
 				rtcRead();
 				timeToArray(); // wird nur ausgeführt, wenn die Uhr einen sicheren, kalibrierten Zeitgeber hat. (RTC fixed)
 			}
-			
+
+			// Teil 3: Minuten-LEDs werden gesetzt, sofern vorhanden!
+			#ifdef MINUTEN_PHIL
+			#ifdef DEBUG_ZEIT
+			uart_tx_strln("setze Minuten-LEDs");
+			#endif
+			if (minutenValid %5 == 0) { // alle LEDs aus
+				cbi(PORTB, PB0);
+				cbi(PORTB, PB1);
+				cbi(PORTB, PB5);
+				cbi(PORTB, PB6);
+			} else if (minutenValid %5 == 1) { // LED 1 an
+				sbi(PORTB, PB1);
+			} else if (minutenValid %5 == 2) { // LED 2 an
+				sbi(PORTB, PB0);
+			} else if (minutenValid %5 == 3) { // LED 3 an
+				sbi(PORTB, PB5);
+			} else if (minutenValid %5 == 4) { // LED 4 an
+				sbi(PORTB, PB6);
+			}
+			#endif
+
 			#ifdef DEBUG_ZEITAUSGABE
 			uartTxDec2(stundenValid);
 			uartTxStr(":");
@@ -375,30 +399,11 @@ if (PIND & (1<<PD2)) { // gerade ist HIGH
 // Muss alle Sekunden sein, damit die Scroll-Funktion geht!
 ISR (INT1_vect, ISR_BLOCK) {
 	sekundenValid++;
-	
+
 	if (sekundenValid == 60) {
 		sekundenValid = 0;
-		#ifdef MINUTEN_PHIL
-		// Behandlung der Minuten_LEDs
-		if (RTC_VALID) {
-			if (minutenValid %5 == 0) { // alle LEDs aus
-				cbi(PORTB, PB0);
-				cbi(PORTB, PB1);
-				cbi(PORTB, PB5);
-				cbi(PORTB, PB6);
-			} else if (minutenValid %5 == 1) { // LED 1 an
-				sbi(PORTB, PB0);
-			} else if (minutenValid %5 == 2) { // LED 2 an
-				sbi(PORTB, PB1);
-			} else if (minutenValid %5 == 3) { // LED 3 an
-				sbi(PORTB, PB5);
-			} else if (minutenValid %5 == 4) { // LED 4 an
-				sbi(PORTB, PB6);
-			}
-		}
-		#endif
 	}
-	
+
 	// Syncnacht aktivieren!
 	if ((stundenValid == 3) && (minutenValid == 0) && (status == RTC_VALID)) {
 // 		if(status == DREIUHR_PRE_DCF_SYNC) {

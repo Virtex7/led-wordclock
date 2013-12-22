@@ -183,10 +183,10 @@ LDFLAGS += $(PRINTF_LIB) $(SCANF_LIB) $(MATH_LIB)
 #
 
 #ponyprog seriell,
-AVRDUDE_PROGRAMMER = usbasp
+AVRDUDE_PROGRAMMER = avrispv2
 
 # com1 = serial port. Use lpt1 to connect to parallel port.
-AVRDUDE_PORT = keindevice
+AVRDUDE_PORT = usb
 
 AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex
 #AVRDUDE_WRITE_EEPROM = -U eeprom:w:$(TARGET).eep

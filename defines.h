@@ -5,7 +5,7 @@
 #define RTC_SET_MIN 59
 #define RTC_SET_STD 2
 
-//Algemeiner Defines Block 
+//Algemeiner Defines Block
 #include "../atmel/lib/0.1.3/global.h"
 #include "../atmel/lib/0.1.3/io/io.h"
 #include <stdio.h>
@@ -39,7 +39,9 @@
 // #define DISPLAY_DIMMEN
 #define DISPLAY_SCROLL
 #define WORDCLOCK_MIRROR
+// #define WORDCLOCK_MIRROR_ZEILEN
 #define nightSyncTime 6
+#define MINUTEN_PHIL
 
 
 // DEBUG-Verhalten
@@ -86,6 +88,7 @@ void clearTemp(void) {
 #endif
 #ifdef DISP_FRANKEN
 #include "./disp_franken.h"
+#define DISP "FRANKEN"
 #endif
 #ifdef DISP_HORM
 #include "./disp_horm.h"

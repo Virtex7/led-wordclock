@@ -76,14 +76,12 @@ void htCommand(uint8_t befehl) {
 	htWriteClk();
 	CS(1);
 }
-inline void htDisplOn(void)
-{
+inline void htDisplOn(void) {
 	htCommand(0b00000001);	// SYS EN
 	htCommand(0b00000011);	// LED on
 }
 
-inline void htDisplOff(void)
-{
+inline void htDisplOff(void) {
 	htCommand(0b00000010);	// LED off
 	htCommand(0b00000000);	// SYS off
 
@@ -91,13 +89,24 @@ inline void htDisplOff(void)
 }
 void htInit(void) {
 	delayms(500);
-	htCommand(0);			// SYS DIS
+	htCommand(0);		// SYS DIS
 	htCommand(0b00100100);	// COM Option: pMOS ROW-Treiber und 16-COM-Option
 	htCommand(0b00011000);	// RC Master Mode
 	htCommand(0b00000001);	// SYS EN
 	htCommand(0b00000011);	// LED on
 }
 void htWriteDisplay(uint16_t *Array) {
+	#ifdef WORDCLOCK_MIRROR_ZEILEN
+	uint16_t temparray[11] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+	for (uint8_t i=0; i<11; i++) { // Spalten (Elemente im Array)
+		for (uint8_t k=0; k<11; k++) { // Bits in Array-Element
+			if (Array[i] & (1<<k)) { 
+				temparray[i] |= (1<<(10-k));
+			}
+		}
+	}
+	Array = temparray;
+	#endif
 	CS(0);
 	DATA(1);
 	htWriteClk();
