@@ -23,7 +23,7 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *
- * Hinweis zur aktuellen Codeversion > 0.3.1
+ * Hinweis zur aktuellen Codeversion > 0.4.0
  *
  * Dieser Quellcode macht sich viele Funktionalität der RTC zu Nutze. Der
  * Atmel wird hierbei hauptsächlich schlafen, und nur jede Minute kurz geweckt.
@@ -33,8 +33,8 @@
 #include "./defines.h"
 
 // builddate und Soft-Version hier lassen.
-#define SOFT_VERSION "0.3.9"
-#define BUILDDATE "21.06.2013"
+#define SOFT_VERSION "0.4.0"
+#define BUILDDATE "22.12.2013"
 
 
 int main(void){
@@ -87,6 +87,7 @@ int main(void){
 			timeToArray(); // wird nur ausgeführt, wenn die Uhr einen sicheren, kalibrierten Zeitgeber hat. (RTC fixed)
 			htDisplOn(); // Aktiviere Display
 			rtcRead(); // korrigiere falsch gesetzten minutenValid-Wert durch RTC-Auslesung
+			setMinutenLeds(); // Setze Minuten-LEDs korrekt
 			
 			#ifdef DEBUG_RTC
 			uartTxStrln("Uhr läuft, aktiviere Display!");
@@ -144,7 +145,7 @@ int main(void){
 		
 		if (status == WRITE_DISP) {
 			// Teil 1: alte Buchstaben "fallen" herunter...
-
+			
 			#ifdef DISPLAY_DIMMEN // Hier wird der Code für das Dimmen der LEDs definiert
 			if (((stundenValid > DIMMEN_START) | (stundenValid < DIMMEN_END)) & (set_dimmen == 0))	{
 				htCommand(0b10100101);
@@ -158,11 +159,11 @@ int main(void){
 			#ifdef DISPLAY_SCROLL
 			if ((sekundenValid == 59) && ((minutenValid) % 5 == 4)) {
 				for (uint8_t shift = 0;shift<11;shift++) { // Matrix-like scrollen
-				for (uint8_t x = 0;x<11;x++) {
-					temp[x]= temp[x] >> 1;
-				}
-				htWriteDisplay(temp);
-				delayms(85);
+					for (uint8_t x = 0;x<11;x++) {
+						temp[x]= temp[x] >> 1;
+					}
+					htWriteDisplay(temp);
+					delayms(85);
 				}
 			}
 			#endif
@@ -173,7 +174,7 @@ int main(void){
 				uart_tx_strln(SOFT_VERSION);
 				
 				// TODO: Fehlervariablen ausgeben!
- 				// uartTxStrln("letzte Fehler bei Synchro, usw.");
+				// uartTxStrln("letzte Fehler bei Synchro, usw.");
 			}
 			#endif
 			
@@ -182,28 +183,10 @@ int main(void){
 				rtcRead();
 				timeToArray(); // wird nur ausgeführt, wenn die Uhr einen sicheren, kalibrierten Zeitgeber hat. (RTC fixed)
 			}
-
+			
 			// Teil 3: Minuten-LEDs werden gesetzt, sofern vorhanden!
-			#ifdef MINUTEN_PHIL
-			#ifdef DEBUG_ZEIT
-			uart_tx_strln("setze Minuten-LEDs");
-			#endif
-			if (minutenValid %5 == 0) { // alle LEDs aus
-				cbi(PORTB, PB0);
-				cbi(PORTB, PB1);
-				cbi(PORTB, PB5);
-				cbi(PORTB, PB6);
-			} else if (minutenValid %5 == 1) { // LED 1 an
-				sbi(PORTB, PB1);
-			} else if (minutenValid %5 == 2) { // LED 2 an
-				sbi(PORTB, PB0);
-			} else if (minutenValid %5 == 3) { // LED 3 an
-				sbi(PORTB, PB5);
-			} else if (minutenValid %5 == 4) { // LED 4 an
-				sbi(PORTB, PB6);
-			}
-			#endif
-
+			setMinutenLeds();
+			
 			#ifdef DEBUG_ZEITAUSGABE
 			uartTxDec2(stundenValid);
 			uartTxStr(":");
@@ -245,10 +228,10 @@ int main(void){
 				delayms(1000);
 				#endif
 			}
-// 			if (min_increase >40) {
-// 				min_increase = 0;
-// 				status = DREIUHR_POST_DCF_SYNC;
-// 			}
+			// 			if (min_increase >40) {
+			// 				min_increase = 0;
+			// 				status = DREIUHR_POST_DCF_SYNC;
+			// 			}
 		}
 		
 		if (status == DREIUHR_POST_DCF_SYNC) {
@@ -265,152 +248,152 @@ int main(void){
 
 
 ISR (INT0_vect, ISR_BLOCK) { // Pinchange-Interrupt an INT0 (DCF-Signal IN)
-// Dieser Interrupt verarbeitet das DCF-Signal, also High- und Lowphasen!!
-
-static uint32_t datenwert=0;
-static uint8_t i=0, sync=0, timeValid=0;
-static uint8_t minutenDcfAktuell=0, stundenDcfAktuell=0;
-static uint8_t minutenDcfLast=0, stundenDcfLast=0;
-
-uint16_t  timerwert_alt = TCNT1;
-TCNT1 = 0; // leere Timer-Speicherwert
-delayms(1);
-
-PORTD ^= (1<<PD7); //LED an PD7 zeigt das DCF77 Signal an
-
-
-if (PIND & (1<<PD2)) { // gerade ist HIGH
-	TCCR1B = (1<<CS11) | (1<<CS10); // Prescaler = 64
-	TCNT1 = 156;
+	// Dieser Interrupt verarbeitet das DCF-Signal, also High- und Lowphasen!!
 	
-	if (timerwert_alt > 14000) {
-		sync = 1;
-		i=0;
-		datenwert = 0;
-		timeValid = 0;
-		#ifdef DEBUG_ERFASSUNG
-		uart_tx_newline();
-		#endif
+	static uint32_t datenwert=0;
+	static uint8_t i=0, sync=0, timeValid=0;
+	static uint8_t minutenDcfAktuell=0, stundenDcfAktuell=0;
+	static uint8_t minutenDcfLast=0, stundenDcfLast=0;
+	
+	uint16_t  timerwert_alt = TCNT1;
+	TCNT1 = 0; // leere Timer-Speicherwert
+	delayms(1);
+	
+	PORTD ^= (1<<PD7); //LED an PD7 zeigt das DCF77 Signal an
+	
+	
+	if (PIND & (1<<PD2)) { // gerade ist HIGH
+		TCCR1B = (1<<CS11) | (1<<CS10); // Prescaler = 64
+		TCNT1 = 156;
 		
-		if ((minutenDcfLast+1 == minutenDcfAktuell) && (stundenDcfLast == stundenDcfAktuell)) {
-			// Vergleich und Setzen der Valid-Uhrzeitvariablen
-			timeValid = 1;
-		} else if ((minutenDcfLast == 59) && (minutenDcfAktuell == 0) && (stundenDcfLast +1 == stundenDcfAktuell)) {
-			timeValid = 1;
-		} else if ((minutenDcfLast == 59) && (minutenDcfAktuell == 0) && ((stundenDcfLast == 23) && (stundenDcfAktuell == 0))) {
-			timeValid = 1;
-		} else { // ACHTUNG FEHLER!! (oder erster Empfang nach Inbetriebnahme)
-			empfangFehler++;
-			#ifdef DEBUG_ZEIT
-			uart_tx_strln("Fehler bei Zeitübernahme!");
-			#endif
-		}
-		if ((minutenDcfAktuell > 59) || (stundenDcfAktuell > 23)) { // offensichtlich Schmarrn.
+		if (timerwert_alt > 14000) {
+			sync = 1;
+			i=0;
+			datenwert = 0;
 			timeValid = 0;
+			#ifdef DEBUG_ERFASSUNG
+			uart_tx_newline();
+			#endif
+			
+			if ((minutenDcfLast+1 == minutenDcfAktuell) && (stundenDcfLast == stundenDcfAktuell)) {
+				// Vergleich und Setzen der Valid-Uhrzeitvariablen
+				timeValid = 1;
+			} else if ((minutenDcfLast == 59) && (minutenDcfAktuell == 0) && (stundenDcfLast +1 == stundenDcfAktuell)) {
+				timeValid = 1;
+			} else if ((minutenDcfLast == 59) && (minutenDcfAktuell == 0) && ((stundenDcfLast == 23) && (stundenDcfAktuell == 0))) {
+				timeValid = 1;
+			} else { // ACHTUNG FEHLER!! (oder erster Empfang nach Inbetriebnahme)
+				empfangFehler++;
+				#ifdef DEBUG_ZEIT
+				uart_tx_strln("Fehler bei Zeitübernahme!");
+				#endif
+			}
+			if ((minutenDcfAktuell > 59) || (stundenDcfAktuell > 23)) { // offensichtlich Schmarrn.
+				timeValid = 0;
+				#ifdef DEBUG_ZEIT
+				uart_tx_strln("Zeit über 23 Uhr und/oder 59 Minuten. WTF??");
+				#endif
+			}
+			if (status > 5)//Hier wird überprüft ob die empfangene Uhrzeit nicht von der hinterlegten Uhrzeit abweicht. Die erste Zeile überprüft ob wir nicht im Anfangssync sind
+			{
+				//Achtung ! Dieser Code funktioniert nur im Zeitfenster um 3 Uhr herum
+				if ((stundenDcfAktuell - stundenValid) > 2){
+					timeValid = 0;
+				}
+			}
+			if (timeValid) { // Zeit ist valide: RTC wird gesetzt
+				minutenValid = minutenDcfAktuell;
+				stundenValid = stundenDcfAktuell;
+				rtcWrite(stundenValid,minutenValid);
+				status = POST_DCF_SYNC;
+			}
+			minutenDcfLast = minutenDcfAktuell;
+			stundenDcfLast = stundenDcfAktuell;
 			#ifdef DEBUG_ZEIT
-			uart_tx_strln("Zeit über 23 Uhr und/oder 59 Minuten. WTF??");
+			uart_tx_str("aktuelle DCF-Zeit: ");
+			uart_tx_dec(stundenDcfAktuell);
+			uart_tx(':');
+			uart_tx_dec(minutenDcfAktuell);
+			uart_tx_newline();
 			#endif
 		}
-		if (status > 5)//Hier wird überprüft ob die empfangene Uhrzeit nicht von der hinterlegten Uhrzeit abweicht. Die erste Zeile überprüft ob wir nicht im Anfangssync sind
-		{
-			//Achtung ! Dieser Code funktioniert nur im Zeitfenster um 3 Uhr herum
-			if ((stundenDcfAktuell - stundenValid) > 2){
-				timeValid = 0;
-			}
-		}
-		if (timeValid) { // Zeit ist valide: RTC wird gesetzt
-			minutenValid = minutenDcfAktuell;
-			stundenValid = stundenDcfAktuell;
-			rtcWrite(stundenValid,minutenValid);
-			status = POST_DCF_SYNC;
-		}
-		minutenDcfLast = minutenDcfAktuell;
-		stundenDcfLast = stundenDcfAktuell;
-		#ifdef DEBUG_ZEIT
-		uart_tx_str("aktuelle DCF-Zeit: ");
-		uart_tx_dec(stundenDcfAktuell);
-		uart_tx(':');
-		uart_tx_dec(minutenDcfAktuell);
+		
+	} else { // gerade ist LOW ---> Auswertung!
+		TCCR1B = (1<<CS12) | (1<<CS10); // Prescaler = 1024
+		TCNT1 = 10;
+		#ifdef DEBUG_TIMER
+		uart_tx_newline();
+		uart_tx_str("Zeit: ");
+		uart_tx_dec(timerwert_alt/156);
+		uart_tx_str(" ms");
 		uart_tx_newline();
 		#endif
-	}
-	
-} else { // gerade ist LOW ---> Auswertung!
-	TCCR1B = (1<<CS12) | (1<<CS10); // Prescaler = 1024
-	TCNT1 = 10;
-	#ifdef DEBUG_TIMER
-	uart_tx_newline();
-	uart_tx_str("Zeit: ");
-	uart_tx_dec(timerwert_alt/156);
-	uart_tx_str(" ms");
-	uart_tx_newline();
-	#endif
-	if (sync) {
-		if ((NULL_LOW < timerwert_alt) && (timerwert_alt < NULL_HIGH)) { // und wir haben eine NULL
-			i++;
-			; // nullen stehen schon da.
-			#ifdef DEBUG_ERFASSUNG
-			uart_tx('0');
-			cbi(PORTB,PB1);
-			#endif
-		} else if((EINS_LOW < timerwert_alt) && (timerwert_alt < EINS_HIGH)) { // und wir haben eine EINS
-			#ifdef DEBUG_ERFASSUNG
-			uart_tx('1');
-			sbi(PORTB,PB1);
-			#endif
-			if((i>=15) && (i<47)) {
-				datenwert |= ((uint32_t)1<<(31-(i-15)));
+		if (sync) {
+			if ((NULL_LOW < timerwert_alt) && (timerwert_alt < NULL_HIGH)) { // und wir haben eine NULL
+				i++;
+				; // nullen stehen schon da.
+				#ifdef DEBUG_ERFASSUNG
+				uart_tx('0');
+				cbi(PORTB,PB1);
+				#endif
+			} else if((EINS_LOW < timerwert_alt) && (timerwert_alt < EINS_HIGH)) { // und wir haben eine EINS
+				#ifdef DEBUG_ERFASSUNG
+				uart_tx('1');
+				sbi(PORTB,PB1);
+				#endif
+				if((i>=15) && (i<47)) {
+					datenwert |= ((uint32_t)1<<(31-(i-15)));
+				}
+				i++;
 			}
-			i++;
+			if(i == 50) { // Zeit zum Auswerten des Datenwortes
+				#ifdef DEBUG_DATENWERT
+				uart_tx_newline();
+				uart_tx_strln("Datenwert: ");
+				uart_tx_bin(datenwert);
+				uart_tx_newline();
+				#endif
+				
+				/*
+				 *		Die Uhrzeit wird aus den verschiedenen Speicherorten im DCF-Signal
+				 *		herausgelesen und in einen einzelnen Wert für Minuten und
+				 *		Sekunden verwandelt, die in je einer Variablen gesichert werden.
+				 *		Nähere Doku zum DCF-Signal: wikipedia lesen, wie ich auch.
+				 */
+				
+				// Minuten Einerstelle
+				minutenDcfAktuell =  (1 & (datenwert>>25)) + 2*(1 & (datenwert>>24)) + 4*(1 &(datenwert>>23)) + 8*(1 & (datenwert>>22));
+				// Minuten Zehnerstelle
+				minutenDcfAktuell += 10*((1 & datenwert>>21)) + 20*((1 & datenwert>>20)) + 40*((1 & datenwert>>19));
+				
+				// Stunden Einerstelle
+				stundenDcfAktuell =  (1 & (datenwert>>17)) + 2*(1 & (datenwert>>16)) + 4*(1 &(datenwert>>15)) + 8*(1 & (datenwert>>14));
+				// Stunden Zehnerstelle
+				stundenDcfAktuell += 10*((1 & datenwert>>13)) + 20*((1 & datenwert>>12));
+			}
 		}
-		if(i == 50) { // Zeit zum Auswerten des Datenwortes
-			#ifdef DEBUG_DATENWERT
-			uart_tx_newline();
-			uart_tx_strln("Datenwert: ");
-			uart_tx_bin(datenwert);
-			uart_tx_newline();
-			#endif
-			
-			/*
-			 *		Die Uhrzeit wird aus den verschiedenen Speicherorten im DCF-Signal
-			 *		herausgelesen und in einen einzelnen Wert für Minuten und
-			 *		Sekunden verwandelt, die in je einer Variablen gesichert werden.
-			 *		Nähere Doku zum DCF-Signal: wikipedia lesen, wie ich auch.
-			 */
-			
-			// Minuten Einerstelle
-			minutenDcfAktuell =  (1 & (datenwert>>25)) + 2*(1 & (datenwert>>24)) + 4*(1 &(datenwert>>23)) + 8*(1 & (datenwert>>22));
-			// Minuten Zehnerstelle
-			minutenDcfAktuell += 10*((1 & datenwert>>21)) + 20*((1 & datenwert>>20)) + 40*((1 & datenwert>>19));
-			
-			// Stunden Einerstelle
-			stundenDcfAktuell =  (1 & (datenwert>>17)) + 2*(1 & (datenwert>>16)) + 4*(1 &(datenwert>>15)) + 8*(1 & (datenwert>>14));
-			// Stunden Zehnerstelle
-			stundenDcfAktuell += 10*((1 & datenwert>>13)) + 20*((1 & datenwert>>12));
+		if(i == 58) {
+			i=0; // eine Minute ist vergangen. SYNC muss neu aufgezogen werden. (und die Minutenlücke kommt auch)
 		}
 	}
-	if(i == 58) {
-		i=0; // eine Minute ist vergangen. SYNC muss neu aufgezogen werden. (und die Minutenlücke kommt auch)
-	}
-}
 }
 
 // Die RTC erzeugt jede Sekunde eine Aktualisierung der sekundenValid-Variable
 // Muss alle Sekunden sein, damit die Scroll-Funktion geht!
 ISR (INT1_vect, ISR_BLOCK) {
 	sekundenValid++;
-
+	
 	if (sekundenValid == 60) {
 		sekundenValid = 0;
 	}
-
+	
 	// Syncnacht aktivieren!
 	if ((stundenValid == 3) && (minutenValid == 0) && (status == RTC_VALID)) {
-// 		if(status == DREIUHR_PRE_DCF_SYNC) {
-// 			min_increase = minutenValid;
-// 		} else {
-			status = DREIUHR_PRE_DCF_SYNC;
-// 		}
+		// 		if(status == DREIUHR_PRE_DCF_SYNC) {
+		// 			min_increase = minutenValid;
+		// 		} else {
+		status = DREIUHR_PRE_DCF_SYNC;
+		// 		}
 	}
 	
 	// Uhr hat es nicht geschafft zu syncen.
