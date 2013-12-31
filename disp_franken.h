@@ -6,6 +6,7 @@ const uint16_t minFuenf [11] PROGMEM = {0,0,0,0,0,0,0,1024,1024,1024,1024};
 const uint16_t minZehn [11] PROGMEM = {256,256,256,256,0,0,0,0,0,0,0};
 const uint16_t minViertel [11] PROGMEM = {0,0,0,0,128,128,128,128,128,128,128};
 const uint16_t minHalb [11] PROGMEM = {32,32,32,32,0,0,0,0,0,0,0};
+const uint16_t minZwanzig [11] PROGMEM = {0,0,0,0,256,256,256,256,256,256,256};
 const uint16_t minDreiviertel [11] PROGMEM = {128,128,128,128,128,128,128,128,128,128,128};
 
 const uint16_t stdEin [11] PROGMEM = {0,0,4,4,4,0,0,0,0,0,0};
@@ -47,10 +48,8 @@ void timeToArray(void) {
 				addArray(stdNach);
 				break;
 			case 20:
-				addArray(minZehn);
-				addArray(minVor);
-				addArray(minHalb);
-				stundenValid++;
+				addArray(minZwanzig);
+				addArray(stdNach);
 				break;
 			case 25:
 				addArray(minFuenf);
@@ -69,9 +68,8 @@ void timeToArray(void) {
 				stundenValid++;
 				break;
 			case 40:
-				addArray(minZehn);
-				addArray(minNach);
-				addArray(minHalb);
+				addArray(minZwanzig);
+				addArray(stdVor);
 				stundenValid++;
 				break;
 			case 45:
