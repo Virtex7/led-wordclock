@@ -3,6 +3,17 @@ Repo für die sog. umgangssprachliche Uhr mit LED-Darstellung
 Update: das Repo ist up:
 https://github.com/Virtex7/AtmelLib
 
+UPDATE:
+
+das Repo mit der Lib muss jetzt einfach im selben Verzeichnis sein, wie das Repo mit der
+Wordclock, damit die Abhänigkeiten aufgelöst sind und das kompilieren klappt.
+
+Also einfach ausführen (in einem freien Verzeichnis):
+
+git clone https://github.com/Virtex7/led-wordclock.git
+git clone https://github.com/Virtex7/AtmelLib
+
+und dann im Wordclock-Verzeichnis arbeiten.
 
 
 Grüße,
