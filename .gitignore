@@ -1,0 +1,17 @@
+# eigene Konfiguration gehört nicht ins Haupt-Git:
+config.h
+
+# Sicherungskopien:
+*.kate-swp
+*~
+
+# Atmel-Kompilat:
+.dep/
+*.eep
+*.elf
+*.hex
+*.lss
+*.lst
+*.map
+*.o
+*.sym
