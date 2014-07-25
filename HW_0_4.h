@@ -22,7 +22,7 @@ void init(void);
 #define SCL PB5
 #define SDA PB3
 uint8_t ERR = 0; // Variable (global)
-#include "../atmel/lib/0.1.3/io/serial/i2c.h"
+#include "../AtmelLib/io/serial/i2c.h"
 
 // Pindefinitionen für den HT1632 Chip
 #define CS(x) out(PORTC,PC2,0,x)	// idle ON

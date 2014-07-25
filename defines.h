@@ -6,8 +6,8 @@
 #define RTC_SET_STD 2
 
 //Algemeiner Defines Block
-#include "../atmel/lib/0.1.3/global.h"
-#include "../atmel/lib/0.1.3/io/io.h"
+#include "../AtmelLib/global.h"
+#include "../AtmelLib/io/io.h"
 #include <stdio.h>
 #include <avr/pgmspace.h>
 #include <avr/interrupt.h>
@@ -67,7 +67,9 @@ uint8_t set_dimmen = 0; //Boolean Wert, der wiederholtes Schreiben in den HT Chi
 
 // USART - die serielle Schnittstelle
 #define mega8
-#include "../atmel/lib/0.1.3/io/serial/uart.h"
+#define UBRRH_VALUE 0
+#define UBRRL_VALUE 11
+#include "../AtmelLib/io/serial/uart.h"
 
 void addArray(const uint16_t *Array) {
 	for(uint8_t i=0; i<11; i++) {
