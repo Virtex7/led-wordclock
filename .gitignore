@@ -1,5 +1,6 @@
 # eigene Konfiguration gehört nicht ins Haupt-Git:
 config.h
+config.example.h
 
 # Sicherungskopien:
 *.kate-swp
