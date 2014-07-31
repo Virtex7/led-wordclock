@@ -33,7 +33,7 @@ uint16_t funkuhr [11] = {512,512,512,512,544,544,32,544,544,544,544};
 void timeToArray(void) {
 	if(minutenValid%5 == 0) { // minuten muss durch 5 Teilbar sein.
 		clearTemp();
-		addArray(esIst); // GrundsÃ€tzlich soll "Es ist" angezeigt werden
+		addArray(esIst); // Grundsätzlich soll "Es ist" angezeigt werden
 		switch (minutenValid) {
 			case 5:
 				addArray(minFuenf);

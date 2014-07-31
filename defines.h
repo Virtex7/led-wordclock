@@ -5,7 +5,7 @@
 #define RTC_SET_MIN 59
 #define RTC_SET_STD 2
 
-//Algemeiner Defines Block
+//Allgemeiner Defines-Block
 #include "../AtmelLib/global.h"
 #include "../AtmelLib/io/io.h"
 #include <stdio.h>
@@ -20,9 +20,11 @@
  *
  * #define HW_0_4
  * Für die aktuelle Hardwareversion. Zur Zeit werden keine anderen unterstützt.
+ * Wird auch in der Debug-Anzeige angezeigt.
  * 
  * # define DISP_xxxx
  * um das Display-Layout auszuwählen. Es gibt:
+ * Dieses Layout muss zum aufgebauten Display passen!
  *
  * DISP_NORM:
  * 
@@ -37,14 +39,19 @@
  * ZWÖLFDTFELF
  * WASDFUNKUHR
  * 
+ * 
  * DISP_FRANKEN:
  * 
  * TODO Doku
  * 
+ * 
  * DISP_HORM:
  * 
- * TODO Doku
+ * Spezialversion für die Gemeinde "Hormersdorf" und deren sehr spezielle
+ * Art, die Uhrzeit zu sagen. Mehr Info unter:
+ * http://www.hormersdorf-erzgebirge.de/mundart.html
  *
+ * xxx
  * 
  * 
  * Weitere Schalter nach Bedarf:
@@ -76,20 +83,62 @@
  * Nur während dieser Zeit kann DCF-Empfang stattfinden, da das LED-PWM den Empfang stört. Also ist 0 nicht erlaubt!
  * 
  * 
+ * DEBUG-Einstellungen (auch in der config.h zu setzen)
+ * 
+ * LED_ROT = Anzeige
+ * LED_GELB = Sync in der Nacht nicht erfolgreich
+ * LED_GRÜN = DCF-SIGNAL
+ *
+ * UART-Einstellung: 57600 BAUD, 1 Stoppbits, 8 Bit Frame, no Parity
+ *
+ *
+ * DEBUG_TIMER:
+ * Ausgabe des erfassten Timerwertes in ms für den High-Pegel des DCF-Signals (roh) aus.
+ *
+ * DEBUG_ERFASSUNG:
+ * gibt die erfassten DCF-Bits aus (60Bit Wort, LSB first)
+ *
+ * DEBUG_DATENWERT:
+ * Ausgabe des Teils des erfassten Wertes, in dem die Uhrzeit steht.
+ * (binär, Reihenfolge wie DCF)
+ *
+ * DEBUG_ZEIT
+ * Ausgabe der berechneten Uhrzeit, wenn die DCF-Uhr synct.
+ * 
+ * DEBUG_ZEITAUSGABE
+ * Gibt die jetzt-Zeit aus, wenn die Uhr auf RTC läuft.
+ * ACHTUNG: Ausgabe jede Sekunde!
+ *
+ * DEBUG_RTC
+ * gibt den Zeitwert der RTC und den aktuellen DCF-Wert in BCD-Code aus
+ * beide Werte stehen zum besseren Vergleich untereinander.
+ * 
+ * DEBUG_RTC_RESET
+ * Setzt die RTC auf jeden Fall zurück, auch wenn schon eine valide
+ * Uhrzeit drinsteht. Für erzwungenen DCF-Empfang verwenden.
+ *
+ * RTC_3UHR_TEST
+ * Setzt die RTC am Anfang der Main auf kurz vor drei Uhr
+ * 
+ * DEBUG_RTC_READ
+ * UART-Ausgabe beim dauerhaften Auslesen der RTC (viel Output!)
+ * genaue Anzeige der aktuellen Uhrzeit ist gewährleistet
+ *
+ * DEBUG_DISPLAY
+ * Alle LEDs des Displays sollten jetzt leuchten, danach Uhr-Funktionen
+ * Wichtig, um Lötfehler ausschließen zu können
+ *
  */
 
-
-// DEBUG-Verhalten
-#include "./debug.h"
 
 // Globale Variablen:
 uint8_t status = 0;
 volatile uint8_t stundenValid = 0, minutenValid = 0, sekundenValid = 0;
 uint16_t temp[11];
 volatile uint8_t empfangFehler = 0;
-volatile uint8_t min_increase = 0; //Dient zum ermitteln des 5 Minuten Zyklus / der 40 Minuten in der Nacht
-uint8_t debug_sync_nacht_error = 0;  //Variable zählt die nicht stattgefundenen Syncs in der Nacht
-uint8_t set_dimmen = 0; //Boolean Wert, der wiederholtes Schreiben in den HT Chip unterbindet (Dimmen Display)
+volatile uint8_t min_increase = 0; // Dient zum ermitteln des 5 Minuten Zyklus / der 40 Minuten in der Nacht
+uint8_t debug_sync_nacht_error = 0;  // Variable zählt die nicht stattgefundenen Syncs in der Nacht
+uint8_t set_dimmen = 0; // Boolean Wert, der wiederholtes Schreiben in den HT Chip unterbindet (Dimmen Display)
 
 
 
@@ -118,7 +167,7 @@ void clearTemp(void) {
 	}
 }
 
-// Definiere Hardwareversion und Displaylayout
+// Definiere Hardwareversion und Displaylayout nach config.h
 #ifdef HW_0_4
 #include "./HW_0_4.h"
 #define HW_VERSION "0_4"
