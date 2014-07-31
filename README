@@ -15,6 +15,8 @@ git clone https://github.com/Virtex7/AtmelLib
 
 und dann im Wordclock-Verzeichnis arbeiten.
 
+In defines.h steht die Anleitung, wie man die Konfiguration für die spezifische Hardware setzt.
+Für eine "Standard" Uhr nach Philipps Definition reicht es, config.example.h nach config.h zu kopieren.
 
 Grüße,
 Philipp Hörauf

@@ -13,35 +13,70 @@
 #include <avr/interrupt.h>
 #include <avr/sleep.h>
 
+// Einstellungen für Funktionalität und Verhalten:
+#include "./config.h"
 
-/* Erklärungen zu den Einstellungen:
+/* Bitte die Datei config.example.h nach config.h kopieren und dann dort die spezifischen Einstellungen setzen.
  *
- * DISPLAY_SCROLL
+ * #define HW_0_4
+ * Für die aktuelle Hardwareversion. Zur Zeit werden keine anderen unterstützt.
+ * 
+ * # define DISP_xxxx
+ * um das Display-Layout auszuwählen. Es gibt:
+ *
+ * DISP_NORM:
+ * 
+ * ESKISTAFÜNF
+ * ZEHNDAUVORG
+ * HALBVORNACH
+ * EINSKURZWEI
+ * DREIAUJVIER
+ * FÜNFTOSECHS
+ * SIEBENLACHT
+ * ANEUNMHZEHN
+ * ZWÖLFDTFELF
+ * WASDFUNKUHR
+ * 
+ * DISP_FRANKEN:
+ * 
+ * TODO Doku
+ * 
+ * DISP_HORM:
+ * 
+ * TODO Doku
+ *
+ * 
+ * 
+ * Weitere Schalter nach Bedarf:
+ * 
+ * #define DISPLAY_SCROLL
  * Matrix-ähnliche Lautschrift wenn die Uhr die Anzeige wechselt.
  * Dies gehört zum normalen Programm der Uhr.
+ * Zum Deaktivieren Zeile weglassen.
  *
- * DISPLAY_DIMMEN
- * Definiert das Dimmen des Displays zwischen den Uhrzeiten DIMMEN_START und DIMMEN_END
+ * #define DISPLAY_DIMMEN
+ * #define DIMMEN_START 22
+ * #define DIMMEN_END 3
+ * Aktiviert das Dimmen des Displays zwischen den Uhrzeiten DIMMEN_START und DIMMEN_END
+ * Zum Deaktivieren Zeilen weglassen.
  *
- * WORDCLOCK_MIRROR
- * Spiegelt die Matrix des Displays ( Je nachdem wie man die Verkabelung anfänt)
+ * #define WORDCLOCK_MIRROR
+ * Spiegelt die Matrixspalten (?) des Displays ( Je nachdem wie man die Verkabelung anfänt)
+ * Zum Deaktivieren Zeile weglassen.
+ * 
+ * #define WORDCLOCK_MIRROR_ZEILEN
+ * Spiegelt die Matrixzeilen des Displays ( Je nachdem wie man die Verkabelung anfänt)
+ * Zum Deaktivieren Zeile weglassen.
  *
- * nightSyncTime
- * Definiert in 10 Minuten Schritten wie lange das Display in der Nacht aus ist.
+ * 
+ * Einstellparameter:
+ * 
+ * #define nightSyncTime 6
+ * Definiert in 10 Minuten Schritten wie lange das Display in der Nacht aus ist, z.B. 6 entspricht 60 Minuten.
+ * Nur während dieser Zeit kann DCF-Empfang stattfinden, da das LED-PWM den Empfang stört. Also ist 0 nicht erlaubt!
+ * 
+ * 
  */
-
-
-// Einstellungen für Funktionalität und Verhalten:
-#define HW_0_4
-#define DISP_FRANKEN
-#define POWER_LED PC0
-
-// #define DISPLAY_DIMMEN
-#define DISPLAY_SCROLL
-#define WORDCLOCK_MIRROR
-// #define WORDCLOCK_MIRROR_ZEILEN
-#define nightSyncTime 6
-#define MINUTEN_PHIL
 
 
 // DEBUG-Verhalten

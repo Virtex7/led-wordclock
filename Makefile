@@ -326,6 +326,8 @@ ramusage: $(TARGET).o
 program: $(TARGET).hex $(TARGET).eep
 	$(AVRDUDE) $(AVRDUDE_FLAGS) $(AVRDUDE_WRITE_FLASH) $(AVRDUDE_WRITE_EEPROM)
 
+fuses:
+	$(AVRDUDE) $(AVRDUDE_FLAGS) -u -U hfuse:w:0xC9:m -U lfuse:w:0x9F:m
 
 
 # Convert ELF to COFF for use in debugging / simulating in AVR Studio or VMLAB.
