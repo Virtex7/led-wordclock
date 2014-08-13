@@ -289,7 +289,8 @@ int main(void){
 ISR (INT0_vect, ISR_BLOCK) { // Pinchange-Interrupt an INT0 (DCF-Signal IN)
 	// Dieser Interrupt verarbeitet das DCF-Signal, also High- und Lowphasen!!
 	static uint32_t datenwert=0;
-	static uint8_t i=0, sync=0, timeValid=0;
+	static uint8_t i=0, timeValid=0;
+	// static uint8_t sync=0;
 	static uint8_t minutenDcfAktuell=0, stundenDcfAktuell=0;
 	static uint8_t minutenDcfLast=0, stundenDcfLast=0;
 	static uint8_t stundenParity=0, minutenParity=0;
@@ -304,14 +305,31 @@ ISR (INT0_vect, ISR_BLOCK) { // Pinchange-Interrupt an INT0 (DCF-Signal IN)
 		TCNT1 = 156;
 		
 		if (timerwert_alt > 14000) {
-			sync = 1;
+// 			sync = 1;
+			uint8_t sekundenticks=i;
 			i=0;
 			datenwert = 0;
 			timeValid = 0;
 			#ifdef DEBUG_ERFASSUNG
 			uart_tx_newline();
 			#endif
-			if ((minutenParity != 0) || (stundenParity != 0)) {
+			#ifdef DEBUG_ZEIT
+			uart_tx_str("aktuelle DCF-Zeit: ");
+			uart_tx_dec(stundenDcfAktuell);
+			uart_tx(':');
+			uart_tx_dec(minutenDcfAktuell);
+			uart_tx_newline();
+			uart_tx_str("Anzahl Bits: ");
+			uart_tx_dec(sekundenticks);
+			uart_tx_newline();
+			#endif
+			
+			if (sekundenticks != 59) {
+				timeValid=0;
+				#ifdef DEBUG_ZEIT
+				uart_tx_strln("zuwenig/zuviel DCF-Bits empfangen");
+				#endif
+			} else if ((minutenParity != 0) || (stundenParity != 0)) {
 				timeValid = 0;
 			} else if ((minutenDcfAktuell > 59) || (stundenDcfAktuell > 23)) { // offensichtlich Schmarrn.
 				timeValid = 0;
@@ -344,19 +362,12 @@ ISR (INT0_vect, ISR_BLOCK) { // Pinchange-Interrupt an INT0 (DCF-Signal IN)
 				stundenValid = stundenDcfAktuell;
 				rtcWrite(stundenValid,minutenValid);
 				status = POST_DCF_SYNC;
-				dcfLastSyncHour = minutenValid;
-				dcfLastSyncMinute = stundenValid;
+				dcfLastSyncHour = stundenValid;
+				dcfLastSyncMinute = minutenValid;
 				dcfSyncSuccess++;
 			}
 			minutenDcfLast = minutenDcfAktuell;
 			stundenDcfLast = stundenDcfAktuell;
-			#ifdef DEBUG_ZEIT
-			uart_tx_str("aktuelle DCF-Zeit: ");
-			uart_tx_dec(stundenDcfAktuell);
-			uart_tx(':');
-			uart_tx_dec(minutenDcfAktuell);
-			uart_tx_newline();
-			#endif
 		}
 		
 	} else { // gerade ist LOW ---> Auswertung!
@@ -369,7 +380,7 @@ ISR (INT0_vect, ISR_BLOCK) { // Pinchange-Interrupt an INT0 (DCF-Signal IN)
 		uart_tx_str(" ms");
 		uart_tx_newline();
 		#endif
-		if (sync) {
+		if (1) {
 			if ((NULL_LOW < timerwert_alt) && (timerwert_alt < NULL_HIGH)) { // und wir haben eine NULL
 				i++;
 				; // nullen stehen schon da.
@@ -410,7 +421,9 @@ ISR (INT0_vect, ISR_BLOCK) { // Pinchange-Interrupt an INT0 (DCF-Signal IN)
 				
 				minutenParity=0;
 				for (uint8_t j=18; j<=25; j++) {
-					minutenParity ^= 1 & (datenwert >> i);
+					if (datenwert & (1<<i)) {
+						minutenParity ^= 1;
+					}
 				}
 				if (minutenParity != 0) {
 #ifdef DEBUG_ZEIT
@@ -426,7 +439,9 @@ ISR (INT0_vect, ISR_BLOCK) { // Pinchange-Interrupt an INT0 (DCF-Signal IN)
 				
 				stundenParity=0;
 				for (uint8_t j=11; j<=14; j++) {
-					stundenParity ^= 1 & (datenwert >> i);
+					if (datenwert & (1<<i)) {
+						stundenParity ^= 1;
+					}
 				}
 				if (stundenParity != 0) {
 #ifdef DEBUG_ZEIT
@@ -435,9 +450,9 @@ ISR (INT0_vect, ISR_BLOCK) { // Pinchange-Interrupt an INT0 (DCF-Signal IN)
 				}
 			}
 		}
-		if(i == 58) {
-			i=0; // eine Minute ist vergangen. SYNC muss neu aufgezogen werden. (und die Minutenlücke kommt auch)
-		}
+// 		if(i == 58) {
+// 			i=0; // eine Minute ist vergangen. SYNC muss neu aufgezogen werden. (und die Minutenlücke kommt auch)
+// 		}
 	}
 }
 

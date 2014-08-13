@@ -15,7 +15,7 @@ git clone https://github.com/Virtex7/AtmelLib
 
 und dann im Wordclock-Verzeichnis arbeiten.
 
-In defines.h steht die Anleitung, wie man die Konfiguration für die spezifische Hardware setzt.
+In defines.h steht die Anleitung, wie man in config.h die Konfiguration für die spezifische Hardware setzt.
 Für eine "Standard" Uhr nach Philipps Definition reicht es, config.example.h nach config.h zu kopieren.
 
 danach muss in einer Konsole (avr-gcc installiert) nur noch "make" getippt werden, um das hex-file der uhr zu erstellen
@@ -29,7 +29,7 @@ Fehlersuche und Entwicklung:
 DCF-LED:
 	alle 2s 1x kurz blinken = Empfang letze Nacht war erfolglos
 	alle 2s 2x kurz blinken = Stromausfall seit letzter Nacht
-	alle 2s 3x kurz blinken, Display aus = RTC-Übertragungsfehler. RTC oder I2C-Bus kaputt
+	alle 2s 3x kurz blinken, Display aus = RTC-Übertragungsfehler (Panic). RTC oder I2C-Bus kaputt
 	aus = Empfang letzte Nacht okay
 	Flackern, sekündliches Blinken o.ä. = DCF-Empfang läuft, LED zeigt den Ausgang des DCF-Empfängers an
 		-> Flackern = schlechter Empfang, sekündliches Blinken möglichst ohne Flackern = guter Empfang
