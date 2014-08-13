@@ -20,3 +20,25 @@ Für eine "Standard" Uhr nach Philipps Definition reicht es, config.example.h na
 
 Grüße,
 Philipp Hörauf
+
+
+Fehlersuche und Entwicklung: 
+DCF-LED:
+	alle 2s 1x kurz blinken = Empfang letze Nacht war erfolglos
+	alle 2s 2x kurz blinken = Stromausfall seit letzter Nacht
+	alle 2s 3x kurz blinken, Display aus = RTC-Übertragungsfehler. RTC oder I2C-Bus kaputt
+	aus = Empfang letzte Nacht okay
+	Flackern, sekündliches Blinken o.ä. = DCF-Empfang läuft, LED zeigt den Ausgang des DCF-Empfängers an
+		-> Flackern = schlechter Empfang, sekündliches Blinken möglichst ohne Flackern = guter Empfang
+
+DEBUG-Ausgabe 57600 baud 8 N 1 (8bit, 1 stopbit, kein Paritätsbit)
+Es wird der Programmablauf und alle 5 Minuten eine Fehlerstatistik ausgegeben.
+Debug-Anschluss: Pin 3 TX (5V-Pegel), Pin 1 GND
+zum Anschluss eines China- TTL UART USB Converter (ebay)
+Auslesen unter Linux z.B. mit Cutecom oder gtkterm
+	
+
+
+Das DCF-Modul ist recht störempfindlich. Meist muss das USB-Kabel des Porgrammers abgesteckt werden, damit ein sauberes Signal empfangen wird. Auch kann es helfen, verschiedene Antennen-Montagepositionen auszuprobieren oder gar die vier Pins des DCF-Moduls mit etwas Kabel zu verlängern
+
+Zum Zurücksetzen der RTC einfach Stromversorgung abstecken und kurz (1s) die Batteriekontakte brücken. Durch den hohen Innenwiderstand normaler CR2032 Knopfzellen ist dabei ein Kurzschluss kein Problem. Bei ernsthaften Li-Batterien sollte man das nicht tun.

@@ -12,6 +12,9 @@
  *  DEBUG_TIMER:
  *  Ausgabe des erfassten Timerwertes in ms für den High-Pegel des DCF-Signals (roh) aus.
  *
+ * DEBUG_STATUS:
+ * Variable "status" in main ausgeben (Zustandsautomat)
+ * 
  *  DEBUG_ERFASSUNG:
  *  gibt die erfassten DCF-Bits aus (60Bit Wort, LSB first)
  *
@@ -47,17 +50,19 @@
  *
  */
 
-#define DEBUG_PIN PB2
-#define DEBUG_PORT PINB
-
 // #define DEBUG_TIMER
+#define DEBUG_STATUS
 #define DEBUG_ERFASSUNG
 // #define DEBUG_DATENWERT
 #define DEBUG_ZEIT
 #define DEBUG_ZEITAUSGABE
 #define DEBUG_RTC
+#define DEBUG_RTC_READ
+#define DEBUG_DISPLAY
+
+
+// Verhaltensänderung
+
 // #define RTC_RESET
 // #define RTC_SET_CLOCK
 // #define RTC_NO_DCF
-#define DEBUG_RTC_READ
-#define DEBUG_DISPLAY

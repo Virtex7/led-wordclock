@@ -60,12 +60,15 @@
  * Aktiviert das Dimmen des Displays zwischen den Uhrzeiten DIMMEN_START und DIMMEN_END
  * Zum Deaktivieren Zeilen weglassen.
  *
+ * 
+ * Display-Spiegelung: Wenn man die Verkabelung falschrum gemacht hat, folgende Parameter (oder beide) ausprobieren:
+ * 
  * #define WORDCLOCK_MIRROR
- * Spiegelt die Matrixspalten (?) des Displays ( Je nachdem wie man die Verkabelung anfänt)
+ * Spiegelt die Matrixspalten (?) des Displays ( Je nachdem wie man die Verkabelung anfängt)
  * Zum Deaktivieren Zeile weglassen.
  * 
  * #define WORDCLOCK_MIRROR_ZEILEN
- * Spiegelt die Matrixzeilen des Displays ( Je nachdem wie man die Verkabelung anfänt)
+ * Spiegelt die Matrixzeilen des Displays ( Je nachdem wie man die Verkabelung anfängt)
  * Zum Deaktivieren Zeile weglassen.
  *
  * 
@@ -83,15 +86,11 @@
 #include "./debug.h"
 
 // Globale Variablen:
-uint8_t status = 0;
+volatile uint8_t status = 0;
 volatile uint8_t stundenValid = 0, minutenValid = 0, sekundenValid = 0;
-uint16_t temp[11];
-volatile uint8_t empfangFehler = 0;
-volatile uint8_t min_increase = 0; //Dient zum ermitteln des 5 Minuten Zyklus / der 40 Minuten in der Nacht
-uint8_t debug_sync_nacht_error = 0;  //Variable zählt die nicht stattgefundenen Syncs in der Nacht
-uint8_t set_dimmen = 0; //Boolean Wert, der wiederholtes Schreiben in den HT Chip unterbindet (Dimmen Display)
-
-
+uint16_t temp[11]; // TODO: eindeutigen Namen einführen
+volatile uint16_t dcfSyncSuccess=0, dcfSyncErrors=0, rtcI2CErrors=0, rtcHighlevelErrors=0;
+volatile uint8_t dcfLastSyncHour=99, dcfLastSyncMinute=99;
 
 // Grenzen, wann DCF-Signale als 0 oder 1 aufgefasst werden. (in ms*(TimerTicks/ms))
 #define NULL_LOW  (uint16_t)156*45
