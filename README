@@ -1,4 +1,4 @@
-Repo für die sog. umgangssprachliche Uhr mit LED-Darstellung
+Repo für die sog. umgangssprachliche Uhr mit LED-Darstellung, kurz "Wordclock"
 
 Update: das Repo ist up:
 https://github.com/Virtex7/AtmelLib
@@ -17,6 +17,9 @@ und dann im Wordclock-Verzeichnis arbeiten.
 
 In defines.h steht die Anleitung, wie man die Konfiguration für die spezifische Hardware setzt.
 Für eine "Standard" Uhr nach Philipps Definition reicht es, config.example.h nach config.h zu kopieren.
+
+danach muss in einer Konsole (avr-gcc installiert) nur noch "make" getippt werden, um das hex-file der uhr zu erstellen
+
 
 Grüße,
 Philipp Hörauf
