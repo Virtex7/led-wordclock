@@ -108,7 +108,7 @@ CINCS =
 CFLAGS = $(CDEFS) $(CINCS)
 CFLAGS += -O$(OPT)
 CFLAGS += -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums
-CFLAGS += -Wall -Wstrict-prototypes
+CFLAGS += -Wall -Wstrict-prototypes -Wunused-but-set-variable -Wunused-variable
 CFLAGS += -Wa,-adhlns=$(<:.c=.lst)
 CFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))
 CFLAGS += $(CSTANDARD)
@@ -116,7 +116,7 @@ CFLAGS += -DF_OSC=$(F_OSC) -DF_CPU=$(F_CPU)
 
 
 # remove unused functions
-CFLAGS += -ffunction-sections
+CFLAGS += -ffunction-sections -fdata-sections 
 LDFLAGS += -Wl,-gc-sections
 
 # Assembler flags.

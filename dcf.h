@@ -38,17 +38,19 @@
 void dcfInit(void) {
 	DCF_PON_DDR |= (1<<DCF_PON_PIN); // PON wird Output
 	TCCR1B = (1<<CS12) | (1<<CS10); // Prescaler = 1024
-	GICR = (1<<INT0);   // INT0 ist ab hier ein Interrupt-Pin
-	MCUCR = (1<<ISC00); // INT0 Logic Change Interrupt
+	GICR |= (1<<INT0);   // INT0 ist ab hier ein Interrupt-Pin
+	MCUCR |= (1<<ISC00); // INT0 Logic Change Interrupt
 }
 
 void dcfOn(void) { //Aktivieren des DCF77 Moduls (PON->0)
 cbi(DCF_POWER_PORT, DCF_POWER_PIN); // Aktiviere DCF-Strom
 delayms(2000);
 sbi(DCF_PON_PORT, DCF_PON_PIN);
+DCF_LED(1); // während des DCF-Empfangs wird DCF-LED durch Interrupt geändert
 }
 
 void dcfOff(void) { //Deaktivieren des DCF77 Moduls (PON->1)
 sbi(DCF_POWER_PORT, DCF_POWER_PIN); // Deaktiviere Strom
 cbi(DCF_PON_PORT, DCF_PON_PIN); // aktiviere PON
+DCF_LED(0);
 }

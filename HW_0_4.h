@@ -13,6 +13,8 @@ void init(void);
 #define DCF_PON_DDR	DDRD
 #define DCF_PON_PORT	PORTD
 #define DCF_PON_PIN	PD4
+#define DCF_IN() (PIND & (1<<PD2))
+#define DCF_LED(x) out(PORTD,PD7,0,x)
 #include "./dcf.h"
 
 // Einbinden der I2C Library
@@ -22,6 +24,7 @@ void init(void);
 #define SCL PB5
 #define SDA PB3
 uint8_t ERR = 0; // Variable (global)
+#define I2C_DELAY_FACTOR 1
 #include "../AtmelLib/io/serial/i2c.h"
 
 // Pindefinitionen für den HT1632 Chip
@@ -37,11 +40,12 @@ uint8_t ERR = 0; // Variable (global)
 #define MIN3(x) out(PORTD,PD5,0,x)
 #define MIN4(x) out(PORTD,PD5,0,x)
 
+
+#define POWER_LED(x) out(PORTC,PC0,0,x)
+
+
 void setMinutenLeds(void) {
 #ifdef MINUTEN_PHIL
-#ifdef DEBUG_ZEIT
-uart_tx_strln("setze Minuten-LEDs");
-#endif
 if (minutenValid %5 == 0) { // alle LEDs aus
 	MIN1(0);
 	MIN2(0);
@@ -54,24 +58,9 @@ if (minutenValid %5 == 0) { // alle LEDs aus
 } else if (minutenValid %5 == 3) { // LED 3 an
 	MIN3(1);
 } else if (minutenValid %5 == 4) { // LED 4 an
-	MIN4(4);
+	MIN4(1);
 }
 #endif
-}
-
-void rtcInit(void) {
-	i2c_tx(0b00000000,0xE,0b11010000); // Aktiviere Oszillator
-	delayms(10);
-// 	i2c_tx(0b10000000,0xB,0b11010000); // Aktiviere den Alarm jede Minute
-// 	delayms(10);
-	i2c_tx(0b10000000,0xC,0b11010000);
-	delayms(10);
-	i2c_tx(0b10000000,0xD,0b11010000);
-	delayms(10);
-// 	i2c_tx(0b00000000,0xE,0b11010000); // Aktiviere Oszillator und den sekundlichen INT
-// 	delayms(10);
-	i2c_tx(0x00,0x02,0b11010000); // Stelle 24-Stunden-Modus ein
-	delayms(10);
 }
 
 void uart_init(void) {
