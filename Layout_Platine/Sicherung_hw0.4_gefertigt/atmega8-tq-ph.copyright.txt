@@ -1,0 +1,1 @@
+based on original part atmega8-ai from  KiCad internal library, modified by Philipp Hörauf, GPL v2 (original author probably: Copyright: 2000-2008, Jean-Pierre Charras)

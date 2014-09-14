@@ -1,0 +1,9 @@
+# extra Ignore-Datei für den Layout-Order und seine Eigenheiten
+
+*.bak
+*.brd
+*.kicad_pcb-bak
+*.gif
+gerber
+Sicherung_OldRTC_hw0.1
+Sicherung_hw0.2

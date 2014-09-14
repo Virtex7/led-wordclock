@@ -1,0 +1,715 @@
+# EESchema Netlist Version 1.1 created  So 12 Mai 2013 17:43:44 CEST
+(
+ ( /500B172F SIL-2 BT1 CR2032
+  ( 1 N-000087 )
+  ( 2 GND )
+ )
+ ( /4F80A6F7 SM0805 C1 1u
+  ( 1 GND )
+  ( 2 +5V )
+ )
+ ( /4F80A6B5 SM0805 C2 22p
+  ( 1 GND )
+  ( 2 N-000010 )
+ )
+ ( /4F80A6BA SM0805 C3 22p
+  ( 1 GND )
+  ( 2 N-000009 )
+ )
+ ( /4F80AD79 SM0805 C4 1u
+  ( 1 /3V )
+  ( 2 GND )
+ )
+ ( /4F80AD7F SM1206POL C5 4,7u
+  ( 1 /3V )
+  ( 2 GND )
+ )
+ ( /4F80AC09 SM1210L C6 15u
+  ( 1 +5V )
+  ( 2 GND )
+ )
+ ( /4F80A6F5 SM0805 C7 1u
+  ( 1 GND )
+  ( 2 +5V )
+ )
+ ( /4F80AC24 SM1210L C8 15u
+  ( 1 +5V )
+  ( 2 GND )
+ )
+ ( /4F80A6EE SM0805 C9 1u
+  ( 1 +5V )
+  ( 2 GND )
+ )
+ ( /4F80ABB2 SM0805 C10 1u
+  ( 1 GND )
+  ( 2 N-000016 )
+ )
+ ( /4F80ABC5 SM0805 C11 1u
+  ( 1 +5V )
+  ( 2 GND )
+ )
+ ( /4F80ABCC SM1812L C12 47u
+  ( 1 +5V )
+  ( 2 GND )
+ )
+ ( /4F80B5FE SM1812L C13 47u
+  ( 1 +5V )
+  ( 2 GND )
+ )
+ ( /500B176C SM0805 C14 1u
+  ( 1 GND )
+  ( 2 +5V )
+ )
+ ( /50281F0E SM0805 C15 1u
+  ( 1 GND )
+  ( 2 +5V )
+ )
+ ( /518F7DB1 SM0805 C16 1u
+  ( 1 N-000087 )
+  ( 2 GND )
+ )
+ ( /5028074F LED-0805-newMask D1 grün
+  ( 1 N-000089 )
+  ( 2 GND )
+ )
+ ( /5028074B LED-0805-newMask D2 gelb
+  ( 1 N-000093 )
+  ( 2 GND )
+ )
+ ( /5028071D LED-0805-newMask D3 rot
+  ( 1 N-000106 )
+  ( 2 GND )
+ )
+ ( /5022C461 SO8N DS1 DS3231M
+  ( 1 ? )
+  ( 2 +5V )
+  ( 3 /RTC_SW )
+  ( 4 ? )
+  ( 5 GND )
+  ( 6 N-000087 )
+  ( 7 /mosi )
+  ( 8 /sck )
+ )
+ ( /4F80A4F5 QFP52 HT1 HT1632C
+  ( 1 ? )
+  ( 2 N-000020 )
+  ( 3 N-000060 )
+  ( 4 N-000021 )
+  ( 5 N-000061 )
+  ( 6 N-000022 )
+  ( 7 +5V )
+  ( 8 N-000065 )
+  ( 9 N-000023 )
+  ( 10 N-000067 )
+  ( 11 N-000027 )
+  ( 12 N-000081 )
+  ( 13 N-000054 )
+  ( 14 GND )
+  ( 15 ? )
+  ( 16 /SerialData )
+  ( 17 /WriteClock )
+  ( 18 /ReadClock )
+  ( 19 /ChipSelect )
+  ( 20 ? )
+  ( 21 +5V )
+  ( 22 N-000050 )
+  ( 23 N-000047 )
+  ( 24 N-000056 )
+  ( 25 GND )
+  ( 26 N-000037 )
+  ( 27 N-000039 )
+  ( 28 N-000042 )
+  ( 29 N-000044 )
+  ( 30 N-000024 )
+  ( 31 N-000033 )
+  ( 32 N-000051 )
+  ( 33 N-000029 )
+  ( 34 ? )
+  ( 35 ? )
+  ( 36 GND )
+  ( 37 ? )
+  ( 38 +5V )
+  ( 39 ? )
+  ( 40 ? )
+  ( 41 ? )
+  ( 42 ? )
+  ( 43 ? )
+  ( 44 ? )
+  ( 45 ? )
+  ( 46 ? )
+  ( 47 ? )
+  ( 48 ? )
+  ( 49 ? )
+  ( 50 ? )
+  ( 51 ? )
+  ( 52 ? )
+ )
+ ( /4F80A6A4 TQFP32 IC1 ATmega8
+  ( 1 /RTC_SW )
+  ( 2 /PON )
+  ( 3 GND )
+  ( 4 +5V )
+  ( 5 GND )
+  ( 6 +5V )
+  ( 7 N-000010 )
+  ( 8 N-000009 )
+  ( 9 N-000012 )
+  ( 10 N-000018 )
+  ( 11 N-000070 )
+  ( 12 /minuten_2 )
+  ( 13 /minuten_1 )
+  ( 14 N-000074 )
+  ( 15 /mosi )
+  ( 16 /miso )
+  ( 17 /sck )
+  ( 18 +5V )
+  ( 19 ? )
+  ( 20 ? )
+  ( 21 GND )
+  ( 22 ? )
+  ( 23 N-000073 )
+  ( 24 /dcf_on )
+  ( 25 /ChipSelect )
+  ( 26 /ReadClock )
+  ( 27 /SerialData )
+  ( 28 /WriteClock )
+  ( 29 /reset )
+  ( 30 N-000069 )
+  ( 31 N-000071 )
+  ( 32 /DCF77 )
+ )
+ ( /518F8F74 GS3 K1 led_1,2
+  ( 1 +5V )
+  ( 2 N-000090 )
+  ( 3 GND )
+ )
+ ( /518F8F81 GS3 K2 led_3,4
+  ( 1 +5V )
+  ( 2 N-000091 )
+  ( 3 GND )
+ )
+ ( /4F80ACD1 PIN_ARRAY_4x1 P1 DCF_CONN_4
+  ( 1 N-000101 )
+  ( 2 N-000014 )
+  ( 3 GND )
+  ( 4 /3V )
+ )
+ ( /4F80AC7B PIN_ARRAY_2X1 P2 5V_CONN_2
+  ( 1 +5V )
+  ( 2 GND )
+ )
+ ( /4F80A853 pin_array_3x2 P3 ISP
+  ( 1 /miso )
+  ( 2 +5V )
+  ( 3 /sck )
+  ( 4 /mosi )
+  ( 5 /reset )
+  ( 6 GND )
+ )
+ ( /4F80A9BA PINHEAD1-6 P4 UART_CONN_6
+  ( 1 GND )
+  ( 2 /rx )
+  ( 3 /tx )
+  ( 4 ? )
+  ( 5 ? )
+  ( 6 ? )
+ )
+ ( /4F80A53F SIL-12 P5 Led_Zeilen_CONN_11
+  ( 1 N-000050 )
+  ( 2 N-000047 )
+  ( 3 N-000056 )
+  ( 4 N-000037 )
+  ( 5 N-000039 )
+  ( 6 N-000042 )
+  ( 7 N-000044 )
+  ( 8 N-000024 )
+  ( 9 N-000033 )
+  ( 10 N-000051 )
+  ( 11 N-000029 )
+ )
+ ( /4F80A526 SIL-12 P6 Led_Spalten_CONN_11
+  ( 1 N-000082 )
+  ( 2 N-000030 )
+  ( 3 N-000080 )
+  ( 4 N-000031 )
+  ( 5 N-000079 )
+  ( 6 N-000032 )
+  ( 7 N-000066 )
+  ( 8 N-000028 )
+  ( 9 N-000064 )
+  ( 10 N-000034 )
+  ( 11 N-000063 )
+ )
+ ( /4F80BE2D 1pin P7 CONN_1
+  ( 1 ? )
+ )
+ ( /4F80BE32 1pin P8 CONN_1
+  ( 1 ? )
+ )
+ ( /4F80BE34 1pin P9 CONN_1
+  ( 1 ? )
+ )
+ ( /4F80BE35 1pin P10 CONN_1
+  ( 1 ? )
+ )
+ ( /50256119 SIL-2 P13 P_led
+  ( 1 GND )
+  ( 2 N-000104 )
+ )
+ ( /502806F0 SIL-2 P14 CONN_2
+  ( 1 GND )
+  ( 2 N-000074 )
+ )
+ ( /4F80AF89 SOT23EBC Q1 BC817
+  ( 1 GND )
+  ( 2 N-000100 )
+  ( 3 N-000101 )
+ )
+ ( /518F90BB SOT23EBC Q2 BC807
+  ( 1 +5V )
+  ( 2 N-000084 )
+  ( 3 N-000016 )
+ )
+ ( /4F80AD9E SM0805 R1 300
+  ( 1 GND )
+  ( 2 N-000015 )
+ )
+ ( /4F80AF38 SM0805 R2 10k
+  ( 1 N-000101 )
+  ( 2 /3V )
+ )
+ ( /4F80AD8B SM0805 R3 220
+  ( 1 /3V )
+  ( 2 N-000015 )
+ )
+ ( /4F80ADA4 R3-LARGE_PADS R4 100
+  ( 1 /3V )
+  ( 2 GND )
+ )
+ ( /4F80AF95 SM0805 R5 1k
+  ( 1 /PON )
+  ( 2 N-000100 )
+ )
+ ( /4F80A582 SM0805 R6 33
+  ( 1 N-000054 )
+  ( 2 N-000082 )
+ )
+ ( /4F80A612 SM0805 R7 33
+  ( 1 N-000027 )
+  ( 2 N-000080 )
+ )
+ ( /4F80A619 SM0805 R8 33
+  ( 1 N-000023 )
+  ( 2 N-000079 )
+ )
+ ( /4F80A620 SM0805 R9 33
+  ( 1 N-000022 )
+  ( 2 N-000066 )
+ )
+ ( /4F80A625 SM0805 R10 33
+  ( 1 N-000021 )
+  ( 2 N-000064 )
+ )
+ ( /4F80A628 SM0805 R11 33
+  ( 1 N-000020 )
+  ( 2 N-000063 )
+ )
+ ( /4F80A60D SM0805 R12 33
+  ( 1 N-000081 )
+  ( 2 N-000030 )
+ )
+ ( /4F80A61B SM0805 R13 33
+  ( 1 N-000067 )
+  ( 2 N-000031 )
+ )
+ ( /4F80A622 SM0805 R14 33
+  ( 1 N-000065 )
+  ( 2 N-000032 )
+ )
+ ( /4F80A632 SM0805 R15 33
+  ( 1 N-000061 )
+  ( 2 N-000028 )
+ )
+ ( /4F80A634 SM0805 R16 33
+  ( 1 N-000060 )
+  ( 2 N-000034 )
+ )
+ ( /500B16EA SM0805 R17 1k
+  ( 1 /sck )
+  ( 2 +5V )
+ )
+ ( /500B16EE SM0805 R18 1k
+  ( 1 /mosi )
+  ( 2 +5V )
+ )
+ ( /500BC76C SM0805 R19 220
+  ( 1 N-000069 )
+  ( 2 /rx )
+ )
+ ( /500BC77A SM0805 R20 220
+  ( 1 N-000071 )
+  ( 2 /tx )
+ )
+ ( /50256131 SM0805 R21 1k
+  ( 1 N-000073 )
+  ( 2 N-000104 )
+ )
+ ( /50280750 SM0805 R22 1K
+  ( 1 N-000070 )
+  ( 2 N-000089 )
+ )
+ ( /5028074A SM0805 R23 1K
+  ( 1 N-000018 )
+  ( 2 N-000093 )
+ )
+ ( /50280731 SM0805 R24 1K
+  ( 1 N-000012 )
+  ( 2 N-000106 )
+ )
+ ( /518F8FB3 SM0805 R25 220
+  ( 1 /minuten_1 )
+  ( 2 N-000090 )
+ )
+ ( /518F8FDD SM0805 R26 220
+  ( 1 /minuten_2 )
+  ( 2 N-000091 )
+ )
+ ( /518F90D8 SM0805 R27 100k
+  ( 1 N-000084 )
+  ( 2 GND )
+ )
+ ( /518FB833 SM0805 R28 1k
+  ( 1 N-000084 )
+  ( 2 /dcf_on )
+ )
+ ( /4F80AD74 SOT223 U1 LM317
+  ( 1 N-000016 )
+  ( 2 N-000015 )
+  ( 3 /3V )
+ )
+ ( /4F80B035 SO14N U3 74HC04
+  ( 1 N-000014 )
+  ( 2 N-000099 )
+  ( 3 N-000099 )
+  ( 4 /DCF77 )
+  ( 5 GND )
+  ( 6 ? )
+  ( 7 GND )
+  ( 8 ? )
+  ( 9 GND )
+  ( 10 ? )
+  ( 11 GND )
+  ( 12 ? )
+  ( 13 GND )
+  ( 14 +5V )
+ )
+ ( /4F80A6B0 HC-18UV X1 16MHz
+  ( 1 N-000009 )
+  ( 2 N-000010 )
+ )
+)
+*
+{ Allowed footprints by component:
+$component C1
+ SM*
+ C?
+ C1-1
+$endlist
+$component C2
+ SM*
+ C?
+ C1-1
+$endlist
+$component C3
+ SM*
+ C?
+ C1-1
+$endlist
+$component C4
+ SM*
+ C?
+ C1-1
+$endlist
+$component C5
+ CP*
+ SM*
+$endlist
+$component C6
+ CP*
+ SM*
+$endlist
+$component C7
+ SM*
+ C?
+ C1-1
+$endlist
+$component C8
+ CP*
+ SM*
+$endlist
+$component C9
+ SM*
+ C?
+ C1-1
+$endlist
+$component C10
+ SM*
+ C?
+ C1-1
+$endlist
+$component C11
+ SM*
+ C?
+ C1-1
+$endlist
+$component C12
+ CP*
+ SM*
+$endlist
+$component C13
+ CP*
+ SM*
+$endlist
+$component C14
+ SM*
+ C?
+ C1-1
+$endlist
+$component C15
+ SM*
+ C?
+ C1-1
+$endlist
+$component C16
+ SM*
+ C?
+ C1-1
+$endlist
+$component D1
+ LED-3MM
+ LED-5MM
+ LED-10MM
+ LED-0603
+ LED-0805
+ LED-1206
+ LEDV
+$endlist
+$component D2
+ LED-3MM
+ LED-5MM
+ LED-10MM
+ LED-0603
+ LED-0805
+ LED-1206
+ LEDV
+$endlist
+$component D3
+ LED-3MM
+ LED-5MM
+ LED-10MM
+ LED-0603
+ LED-0805
+ LED-1206
+ LEDV
+$endlist
+$component IC1
+ TQFP32
+$endlist
+$component R1
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R2
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R3
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R4
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R5
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R6
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R7
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R8
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R9
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R10
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R11
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R12
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R13
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R14
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R15
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R16
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R17
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R18
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R19
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R20
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R21
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R22
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R23
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R24
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R25
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R26
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R27
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$component R28
+ R?
+ SM0603
+ SM0805
+ R?-*
+ SM1206
+$endlist
+$endfootprintlist
+}

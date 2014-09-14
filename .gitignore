@@ -6,6 +6,11 @@ config.h
 *.kate-swp
 *~
 
+# Einzelne Dateien und Ordner
+INTERNA
+DCF Wetter.txt
+
+
 # Atmel-Kompilat:
 .dep/
 *.eep
