@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by Cvpcb (2014-08-05 BZR 5054)-product   date = So 14 Sep 2014 13:18:06 CEST
+Cmp-Mod V01 Created by Cvpcb (2014-08-05 BZR 5054)-product   date = So 05 Okt 2014 23:37:47 CEST
 
 BeginCmp
 TimeStamp = /500B172F;
@@ -39,14 +39,14 @@ BeginCmp
 TimeStamp = /5415A6EE;
 Reference = C5;
 ValeurCmp = 10u;
-IdModule  = Capacitors_SMD:c_0805;
+IdModule  = SMD_Packages:SMD-0805;
 EndCmp
 
 BeginCmp
 TimeStamp = /54159EB1;
 Reference = C6;
 ValeurCmp = 10u;
-IdModule  = Capacitors_SMD:c_0805;
+IdModule  = SMD_Packages:SMD-0805;
 EndCmp
 
 BeginCmp
@@ -60,7 +60,7 @@ BeginCmp
 TimeStamp = /5415A138;
 Reference = C8;
 ValeurCmp = 10u;
-IdModule  = Capacitors_SMD:c_0805;
+IdModule  = SMD_Packages:SMD-0805;
 EndCmp
 
 BeginCmp
@@ -88,14 +88,14 @@ BeginCmp
 TimeStamp = /541599EC;
 Reference = C12;
 ValeurCmp = 10u;
-IdModule  = Capacitors_SMD:c_0805;
+IdModule  = SMD_Packages:SMD-0805;
 EndCmp
 
 BeginCmp
 TimeStamp = /541598C7;
 Reference = C13;
 ValeurCmp = 10u;
-IdModule  = Capacitors_SMD:c_0805;
+IdModule  = SMD_Packages:SMD-0805;
 EndCmp
 
 BeginCmp
@@ -109,7 +109,7 @@ BeginCmp
 TimeStamp = /518F7DB1;
 Reference = C16;
 ValeurCmp = 10u;
-IdModule  = Capacitors_SMD:c_0805;
+IdModule  = SMD_Packages:SMD-0805;
 EndCmp
 
 BeginCmp
@@ -169,9 +169,9 @@ IdModule  = QFP52:QFP52;
 EndCmp
 
 BeginCmp
-TimeStamp = /4F80A6A4;
+TimeStamp = /5415DF5B;
 Reference = IC1;
-ValeurCmp = ATmega8;
+ValeurCmp = ATMEGA8-AI;
 IdModule  = SMD_Packages:TQFP-32;
 EndCmp
 
@@ -256,6 +256,13 @@ BeginCmp
 TimeStamp = /502806F0;
 Reference = P14;
 ValeurCmp = CONN_2;
+IdModule  = Pin_Headers:Pin_Header_Straight_1x02;
+EndCmp
+
+BeginCmp
+TimeStamp = /543227B9;
+Reference = P101;
+ValeurCmp = CONN_01X02;
 IdModule  = Pin_Headers:Pin_Header_Straight_1x02;
 EndCmp
 
@@ -487,7 +494,7 @@ BeginCmp
 TimeStamp = /4F80B035;
 Reference = U3;
 ValeurCmp = 74HC04;
-IdModule  = ;
+IdModule  = SMD_Packages:SOIC-14_N;
 EndCmp
 
 BeginCmp
