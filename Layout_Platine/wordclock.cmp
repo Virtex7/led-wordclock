@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by Cvpcb (2014-08-05 BZR 5054)-product   date = So 05 Okt 2014 23:37:47 CEST
+Cmp-Mod V01 Created by Cvpcb (2014-08-05 BZR 5054)-product   date = Mo 06 Okt 2014 00:29:24 CEST
 
 BeginCmp
 TimeStamp = /500B172F;
@@ -130,28 +130,28 @@ BeginCmp
 TimeStamp = /5028074B;
 Reference = D2;
 ValeurCmp = min3;
-IdModule  = Connect:GS2;
+IdModule  = Pin_Headers:Pin_Header_Straight_1x02;
 EndCmp
 
 BeginCmp
 TimeStamp = /5028071D;
 Reference = D3;
 ValeurCmp = min4;
-IdModule  = Connect:GS2;
+IdModule  = Pin_Headers:Pin_Header_Straight_1x02;
 EndCmp
 
 BeginCmp
 TimeStamp = /53B855D5;
 Reference = D4;
 ValeurCmp = min1;
-IdModule  = Connect:GS2;
+IdModule  = Pin_Headers:Pin_Header_Straight_1x02;
 EndCmp
 
 BeginCmp
 TimeStamp = /53B855E0;
 Reference = D5;
 ValeurCmp = min2;
-IdModule  = Connect:GS2;
+IdModule  = Pin_Headers:Pin_Header_Straight_1x02;
 EndCmp
 
 BeginCmp
