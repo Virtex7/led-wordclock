@@ -1,4 +1,4 @@
-Cmp-Mod V01 Created by Cvpcb (2014-08-05 BZR 5054)-product   date = Mo 06 Okt 2014 00:29:24 CEST
+Cmp-Mod V01 Created by Cvpcb (2014-08-05 BZR 5054)-product   date = Mo 06 Okt 2014 19:50:16 CEST
 
 BeginCmp
 TimeStamp = /500B172F;
@@ -260,10 +260,17 @@ IdModule  = Pin_Headers:Pin_Header_Straight_1x02;
 EndCmp
 
 BeginCmp
-TimeStamp = /543227B9;
+TimeStamp = /5432EB1B;
 Reference = P101;
-ValeurCmp = CONN_01X02;
-IdModule  = Pin_Headers:Pin_Header_Straight_1x02;
+ValeurCmp = CONN_01X03;
+IdModule  = Pin_Headers:Pin_Header_Straight_1x03;
+EndCmp
+
+BeginCmp
+TimeStamp = /5432F9C3;
+Reference = P102;
+ValeurCmp = CONN_01X01;
+IdModule  = Pin_Headers:Pin_Header_Straight_1x01;
 EndCmp
 
 BeginCmp
@@ -277,6 +284,13 @@ BeginCmp
 TimeStamp = /518F90BB;
 Reference = Q2;
 ValeurCmp = BC807;
+IdModule  = SMD_Packages:SOT-23-EBC;
+EndCmp
+
+BeginCmp
+TimeStamp = /5432D8A7;
+Reference = Q101;
+ValeurCmp = BC817;
 IdModule  = SMD_Packages:SOT-23-EBC;
 EndCmp
 
@@ -480,6 +494,20 @@ BeginCmp
 TimeStamp = /53B85DFA;
 Reference = R29;
 ValeurCmp = 150;
+IdModule  = SMD_Packages:SMD-0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /5432ED93;
+Reference = R101;
+ValeurCmp = pullup;
+IdModule  = SMD_Packages:SMD-0805;
+EndCmp
+
+BeginCmp
+TimeStamp = /5432DA7F;
+Reference = R102;
+ValeurCmp = 1k;
 IdModule  = SMD_Packages:SMD-0805;
 EndCmp
 
