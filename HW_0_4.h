@@ -35,11 +35,11 @@ uint8_t ERR = 0; // Variable (global)
 #include "./ht1632.h" //Einbinden der Displaycontroller-Ansteuerung
 
 // Minuten-LEDs - hier kann die Reihenfolge definiert werden
-#define MIN1(x) out(PORTB,PB0,0,x)
-#define MIN2(x) out(PORTB,PB1,0,x)
-#define MIN3(x) out(PORTD,PD5,0,x)
-#define MIN4(x) out(PORTD,PD5,0,x)
 
+#define MIN1(x) out(PORTD,PD5,0,x)
+#define MIN2(x) out(PORTD,PD6,0,x)
+#define MIN3(x) out(PORTB,PB1,0,x)
+#define MIN4(x) out(PORTB,PB0,0,x)
 
 #define POWER_LED(x) out(PORTC,PC0,0,x)
 
@@ -51,13 +51,17 @@ if (minutenValid %5 == 0) { // alle LEDs aus
 	MIN2(0);
 	MIN3(0);
 	MIN4(0);
-} else if (minutenValid %5 == 1) { // LED 1 an
+}
+if (minutenValid %5 >= 1) { // LED 1 an
 	MIN1(1);
-} else if (minutenValid %5 == 2) { // LED 2 an
+}
+if (minutenValid %5 >= 2) { // LED 2 an
 	MIN2(1);
-} else if (minutenValid %5 == 3) { // LED 3 an
+}
+if (minutenValid %5 >= 3) { // LED 3 an
 	MIN3(1);
-} else if (minutenValid %5 == 4) { // LED 4 an
+}
+if (minutenValid %5 >= 4) { // LED 4 an
 	MIN4(1);
 }
 #endif
@@ -105,4 +109,24 @@ void init(void) {
 	uart_tx_strln("DCF-Wordclock!");
 	
 	htInit();		// Aktiviere Displaycontroller
+}
+
+void minutentest(void) {
+	for(uint8_t i=0; i<3; i++) {
+		MIN1(1);
+		delayms(500);
+		MIN2(1);
+		delayms(500);
+		MIN3(1);
+		delayms(500);
+		MIN4(1);
+		
+		delayms(1000);
+		MIN1(0);
+		MIN2(0);
+		MIN3(0);
+		MIN4(0);
+		delayms(500);
+		
+	}
 }

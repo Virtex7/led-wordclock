@@ -34,29 +34,10 @@
 
 int main(void){
 	uint8_t dcfLastSyncSuccessful=2; // letzter DCF-Sync erfolgreich? 0 = Nein, 1 = ja, 2 = Stromausfall
-// 	if (1) {
-// 		
-// 		init();
-// 		ERR=0;
-// 		PORTC|=1;
-// 		delayms(100);
-// 		rtcReadRegister(0x02);
-// 		delayms(1);
-// 		rtcReadRegister(0x03);
-// 		delayms(1);
-// 		PORTC=0;
-// 	}
-// 	
-// 	while(1) {}
+
 #ifdef DEBUG_STATUS
 	uint8_t oldStatus=123;
 #endif
-	
-// 	init();
-// 	while(1)  {
-// 	PORTD ^= (1<<PD7);
-// 	delayms(255);
-// 	}
 	while(1) {
 #ifdef DEBUG_STATUS
 		if (status != oldStatus) {
@@ -130,6 +111,7 @@ int main(void){
 			
 			// Für 10 Sekunden wird Funkuhr angezeigt
 			#ifdef DEBUG_DISPLAY
+			minutentest();
 			htWriteDisplay(Allon);
 			delayms(10000);
 			#endif

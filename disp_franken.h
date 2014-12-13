@@ -23,7 +23,7 @@ const uint16_t stdZehn [11] PROGMEM = {8,8,8,8,0,0,0,0,0,0,0};
 const uint16_t stdElf [11] PROGMEM = {2,2,2,0,0,0,0,0,0,0,0};
 const uint16_t stdZwoelf [11] PROGMEM = {0,0,16,16,16,16,16,0,0,0,0};
 
-const uint16_t stdVor [11] PROGMEM = {0,0,0,0,64,64,64,0,0,0,0};
+const uint16_t stdVor [11] PROGMEM = {0,0,0,0,0,64,64,64,0,0,0};
 const uint16_t stdNach [11] PROGMEM = {64,64,64,64,0,0,0,0,0,0,0};
 const uint16_t uhr [11] PROGMEM = {0,0,0,0,0,0,1,1,1,0,0};
 
