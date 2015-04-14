@@ -13,6 +13,9 @@
 #include <avr/interrupt.h>
 #include <avr/sleep.h>
 
+#define HFUSE C9
+#define LFUSE 9F
+
 // Einstellungen für Funktionalität und Verhalten:
 #include "./config.h"
 

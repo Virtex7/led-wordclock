@@ -36,10 +36,10 @@ uint8_t ERR = 0; // Variable (global)
 
 // Minuten-LEDs - hier kann die Reihenfolge definiert werden
 
-#define MIN1(x) out(PORTD,PD5,0,x)
-#define MIN2(x) out(PORTD,PD6,0,x)
-#define MIN3(x) out(PORTB,PB1,0,x)
 #define MIN4(x) out(PORTB,PB0,0,x)
+#define MIN3(x) out(PORTB,PB1,0,x)
+#define MIN2(x) out(PORTD,PD5,0,x)
+#define MIN1(x) out(PORTD,PD6,0,x)
 
 #define POWER_LED(x) out(PORTC,PC0,0,x)
 

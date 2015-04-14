@@ -38,6 +38,7 @@ int main(void){
 #ifdef DEBUG_STATUS
 	uint8_t oldStatus=123;
 #endif
+	
 	while(1) {
 #ifdef DEBUG_STATUS
 		if (status != oldStatus) {
@@ -50,9 +51,9 @@ int main(void){
 		
 		if (status == INIT) {
 			init(); //Je nach Hardware Rev. unterschiedliche Init --> siehe HW_x_x.h
+			sei(); // Ab hier sind Interrupts aktiv
 			uartTxStr("Firmware kompiliert am ");
 			uartTxStrln(__TIMESTAMP__);
-			sei(); // Ab hier sind Interrupts aktiv
 			//Nächster Ablauf 
 			status = RTC_CHECK_VALID;
 			
