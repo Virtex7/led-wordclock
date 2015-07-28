@@ -1,11 +1,7 @@
 Repo für die sog. umgangssprachliche Uhr mit LED-Darstellung, kurz "Wordclock"
-
-Update: das Repo ist up:
 https://github.com/Virtex7/AtmelLib
 
-UPDATE:
-
-das Repo mit der Lib muss jetzt einfach im selben Verzeichnis sein, wie das Repo mit der
+Das Repo mit der Lib muss jetzt einfach im selben Verzeichnis sein, wie das Repo mit der
 Wordclock, damit die Abhänigkeiten aufgelöst sind und das kompilieren klappt.
 
 Also einfach ausführen (in einem freien Verzeichnis):
@@ -13,19 +9,28 @@ Also einfach ausführen (in einem freien Verzeichnis):
 git clone https://github.com/Virtex7/led-wordclock.git
 git clone https://github.com/Virtex7/AtmelLib
 
-und dann im Wordclock-Verzeichnis arbeiten.
+und dann im Wordclock-Verzeichnis arbeiten:
+cd led-wordclock/
 
 In defines.h steht die Anleitung, wie man in config.h die Konfiguration für die spezifische Hardware setzt.
 Für eine "Standard" Uhr nach Philipps Definition reicht es, config.example.h nach config.h zu kopieren.
 
 danach muss in einer Konsole (avr-gcc installiert) nur noch "make" getippt werden, um das hex-file der uhr zu erstellen
 
+Programmieren per
+make fuses
+make program
+
 
 Grüße,
 Philipp Hörauf
 
 
-Fehlersuche und Entwicklung: 
+Fehlersuche und Entwicklung:
+
+Beim Anschalten kommt eine Testsequenz (Minuten-LEDs gehen nacheinander an, dann alle LEDs, dann der Schriftzug "Dauert kurz Funkuhr". Dieser Test kommt nur, wenn DEBUG_DISPLAY in der Konfiguration aktiv ist und noch kein DCF-Empfang erfolgreich war.
+Wenn garkeine LEDs leuchten, nach der DCF-LED schauen, wahrscheinlich ist dann ein RTC-Problem.
+
 DCF-LED:
 	alle 2s 1x kurz blinken = Empfang letze Nacht war erfolglos
 	alle 2s 2x kurz blinken = Stromausfall seit letzter Nacht

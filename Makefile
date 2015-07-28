@@ -183,7 +183,7 @@ LDFLAGS += $(PRINTF_LIB) $(SCANF_LIB) $(MATH_LIB)
 #
 
 #ponyprog seriell,
-AVRDUDE_PROGRAMMER = avrispv2
+AVRDUDE_PROGRAMMER = avrispv2 -B 1
 
 # com1 = serial port. Use lpt1 to connect to parallel port.
 AVRDUDE_PORT = usb
@@ -327,7 +327,7 @@ program: $(TARGET).hex $(TARGET).eep
 	$(AVRDUDE) $(AVRDUDE_FLAGS) $(AVRDUDE_WRITE_FLASH) $(AVRDUDE_WRITE_EEPROM)
 
 fuses:
-	$(AVRDUDE) $(AVRDUDE_FLAGS) -u -U hfuse:w:0xC9:m -U lfuse:w:0x9F:m
+	$(AVRDUDE) $(AVRDUDE_FLAGS) -B 255 -u -U hfuse:w:0xC9:m -U lfuse:w:0x9F:m
 
 
 # Convert ELF to COFF for use in debugging / simulating in AVR Studio or VMLAB.
