@@ -6,9 +6,9 @@
 
 // #define DISPLAY_DIMMEN
 #define DISPLAY_SCROLL
-#define WORDCLOCK_MIRROR
+// #define WORDCLOCK_MIRROR
 // #define WORDCLOCK_MIRROR_ZEILEN
-#define nightSyncTime 6
+#define nightSyncTime 4
 #define MINUTEN_PHIL
 
 // #define DEBUG_TIMER

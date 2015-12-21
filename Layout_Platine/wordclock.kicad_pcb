@@ -1,9 +1,9 @@
-(kicad_pcb (version 4) (host pcbnew "(2014-11-19 BZR 5293)-product")
+(kicad_pcb (version 4) (host pcbnew "(2015-12-01 BZR 6337)-product")
 
   (general
     (links 163)
     (no_connects 0)
-    (area 160.8836 32.9946 260.972904 93.1164)
+    (area 160.8836 32.9946 255.270001 93.1164)
     (thickness 1.6002)
     (drawings 25)
     (tracks 852)
@@ -21,14 +21,14 @@
   )
 
   (layers
-    (0 Vorderseite mixed)
-    (31 Rückseite mixed)
-    (36 B.SilkS user)
+    (0 Vorderseite mixed hide)
+    (31 Rückseite mixed hide)
+    (36 B.SilkS user hide)
     (37 F.SilkS user)
     (38 B.Mask user)
     (39 F.Mask user)
     (41 Cmts.User user hide)
-    (44 Edge.Cuts user hide)
+    (44 Edge.Cuts user)
   )
 
   (setup
@@ -61,7 +61,7 @@
     (pad_drill 0)
     (pad_to_mask_clearance 0.254)
     (aux_axis_origin 0 0)
-    (visible_elements FFFDFF7F)
+    (visible_elements FFFDFF3F)
     (pcbplotparams
       (layerselection 0x010f0_80000001)
       (usegerberextensions true)
